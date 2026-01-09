@@ -1,0 +1,25 @@
+# Maven
+/target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Selenium downloads
+/downloads/
+
+# Env
+.env
+
+# Reports
+/reports/
+
+# Driver cache (WebDriverManager)
+/.wdm/
