@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}My Results{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📊 My Results</h1>
+        <p class="text-secondary">View all your exam results</p>
+    </div>
+</div>
+
+{% if results %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">📈 Exam Results</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>📝 Exam Name</th>
+                        <th>📊 Score</th>
+                        <th>📈 Percentage</th>
+                        <th>📅 Released At</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td><strong>{{ result.exam_name }}</strong></td>
+                        <td>
+                            <span class="badge badge-info">{{ result.earned_points }} / {{ result.total_points }}</span>
+                        </td>
+                        <td>
+                            {% if result.is_passed %}
+                                <span class="badge badge-success">{{ result.percentage }}% ✅ PASSED</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ result.percentage }}% ❌ FAILED</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ result.released_at or 'N/A' }}</td>
+                        <td>
+                            <a href="/student/results/{{ result.attempt_id }}" class="btn btn-sm btn-primary">
+                                📋 View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <h4 class="text-muted mb-3">📭 No Results Yet</h4>
+        <p class="text-secondary">You don't have any exam results available yet. Complete some exams to see your results here.</p>
+        <a href="/student/dashboard" class="btn btn-secondary mt-3">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="/student/dashboard" class="btn btn-secondary">
+        ← Back to Dashboard
+    </a>
+</div>
+{% endblock %}
+

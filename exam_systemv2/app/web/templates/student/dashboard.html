@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📚 Student Dashboard</h1>
+        <p class="text-secondary">Manage your exams and track your progress</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ assignments|length if assignments else 0 }}</h3>
+            <p>Total Assignments</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ assignments|selectattr('status_value', 'equalto', 'ASSIGNED')|list|length }}</h3>
+            <p>Pending Exams</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ assignments|selectattr('status_value', 'equalto', 'COMPLETED')|list|length }}</h3>
+            <p>Completed Exams</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ average_score }}%</h3>
+            <p>Average Score</p>
+        </div>
+    </div>
+</div>
+
+{% if upcoming_exams %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="mb-0">📅 Upcoming Exams</h3>
+    </div>
+    <div class="card-body">
+        <div class="list-group">
+            {% for exam in upcoming_exams[:3] %}
+            <div class="list-group-item">
+                <strong>{{ exam.exam_name }}</strong>
+                <span class="badge badge-warning ms-2">Starts in {{ exam.days_until }} day{{ 's' if exam.days_until != 1 else '' }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">📋 My Assignments</h3>
+        <div>
+            <a href="/student/statistics" class="btn btn-sm btn-info me-2">📈 Statistics</a>
+            <a href="/student/results" class="btn btn-sm btn-primary">📊 Results</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Filters and Search -->
+        <form method="get" action="/student/dashboard" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="filter_status" class="form-label">Filter by Status</label>
+                    <select class="form-control" id="filter_status" name="filter_status">
+                        <option value="all" {% if filter_status == "all" %}selected{% endif %}>All</option>
+                        <option value="ASSIGNED" {% if filter_status == "ASSIGNED" %}selected{% endif %}>Assigned</option>
+                        <option value="IN_PROGRESS" {% if filter_status == "IN_PROGRESS" %}selected{% endif %}>In Progress</option>
+                        <option value="COMPLETED" {% if filter_status == "COMPLETED" %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="sort_by" class="form-label">Sort By</label>
+                    <select class="form-control" id="sort_by" name="sort_by">
+                        <option value="date" {% if sort_by == "date" %}selected{% endif %}>Date</option>
+                        <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="sort_order" class="form-label">Order</label>
+                    <select class="form-control" id="sort_order" name="sort_order">
+                        <option value="desc" {% if sort_order == "desc" %}selected{% endif %}>Newest First</option>
+                        <option value="asc" {% if sort_order == "asc" %}selected{% endif %}>Oldest First</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Search by exam name...">
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
+                </div>
+            </div>
+        </form>
+        
+        {% if assignments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>📝 Exam Name</th>
+                        <th>📊 Status</th>
+                        <th>📅 Assigned At</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td>
+                            <strong>{{ assignment.exam_name }}</strong>
+                            <br>
+                            <a href="/student/exams/{{ assignment.exam_id }}/details" class="text-muted small">View Details</a>
+                        </td>
+                        <td>
+                            {% if assignment.status_value == "ASSIGNED" %}
+                                <span class="badge badge-warning">⏳ Assigned</span>
+                            {% elif assignment.status_value == "IN_PROGRESS" %}
+                                <span class="badge badge-info">🔄 In Progress</span>
+                            {% elif assignment.status_value == "COMPLETED" %}
+                                <span class="badge badge-success">✅ Completed</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ assignment.status_value }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ assignment.assigned_at }}</td>
+                        <td>
+                            {% if assignment.status_value == "ASSIGNED" %}
+                            <form method="post" action="/student/exams/{{ assignment.id }}/start" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    🚀 Start Exam
+                                </button>
+                            </form>
+                            {% elif assignment.status_value == "IN_PROGRESS" %}
+                            {% if assignment.attempt_id %}
+                            <a href="/student/attempts/{{ assignment.attempt_id }}" 
+                               class="btn btn-sm btn-primary">📝 Continue</a>
+                            {% else %}
+                            <span class="text-muted">No active attempt</span>
+                            {% endif %}
+                            {% elif assignment.status_value == "COMPLETED" %}
+                            {% if assignment.attempt_id %}
+                            <a href="/student/results/{{ assignment.attempt_id }}" 
+                               class="btn btn-sm btn-info">📊 View Results</a>
+                            {% else %}
+                            <span class="text-muted">No results available</span>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <h4 class="text-muted">📭 No assignments found</h4>
+            <p class="text-secondary">{% if search or filter_status != "all" %}Try adjusting your filters or search terms.{% else %}You don't have any exam assignments at the moment.{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

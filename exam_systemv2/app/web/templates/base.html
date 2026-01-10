@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Online Exam System{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/luxury-theme.css" rel="stylesheet">
+    <style>
+        /* FORCE PAGE BACKGROUND DARK */
+        html, body {
+            background: #18252D !important;
+            background-color: #18252D !important;
+        }
+        /* FORCE DASHBOARD CARD DARK */
+        .dashboard-card, .dashboard-card.bg-white, .dashboard-card.bg-light,
+        .dashboard-card.text-center, .dashboard-card.text-center.bg-white {
+            background: #1e2a33 !important;
+            background-color: #1e2a33 !important;
+        }
+        .dashboard-card *, .dashboard-card > * {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+        .dashboard-card h3, .dashboard-card p {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+        /* FORCE TABLE DARK BACKGROUND */
+        .table, .table *, .table td, .table th, .table tbody, .table tbody tr, .table tbody td, .table thead, .table thead th {
+            background: #1e2330 !important;
+            background-color: #1e2330 !important;
+            color: #FFFFFF !important;
+        }
+        .table tbody td, .table tbody td strong, .table tbody td span {
+            color: #FFFFFF !important;
+        }
+        .table .text-muted, .table small {
+            color: #E0E8F5 !important;
+        }
+        .table-responsive {
+            background: #1e2330 !important;
+            background-color: #1e2330 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <strong>✨ Exam System</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user %}
+                        {% if user.role.value == "student" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/student/dashboard">📚 Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/student/exams">📝 My Exams</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/student/results">📊 Results</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/student/statistics">📈 Statistics</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                                    👤 Profile
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/student/profile">👤 My Profile</a></li>
+                                    <li><a class="dropdown-item" href="/student/change-password">🔒 Change Password</a></li>
+                                </ul>
+                            </li>
+                        {% elif user.role.value == "teacher" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/teacher/dashboard">📚 Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/teacher/questions">❓ Questions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/teacher/exams">📝 Exams</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/teacher/profile">👤 My Profile</a>
+                            </li>
+                        {% elif user.role.value == "admin" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/dashboard">📚 Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/users">👥 Users</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/subjects">📚 Subjects</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <div class="navbar-nav ms-auto">
+                    {% if user %}
+                        <span class="navbar-text me-3">
+                            <i class="bi bi-person-circle"></i> 
+                            <strong>{{ user.username }}</strong> 
+                            <span class="badge badge-info ms-2">{{ user.role.value|upper }}</span>
+                        </span>
+                        <a class="nav-link" href="/logout">🚪 Logout</a>
+                    {% else %}
+                        <a class="nav-link" href="/login">🔐 Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4 fade-in">
+        {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>⚠️ Error:</strong> {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+        {% if message %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>✅ Success:</strong> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+        {% if flash_message %}
+            {% if flash_message.type == "success" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>✅ Success:</strong> {{ flash_message.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% elif flash_message.type == "error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>⚠️ Error:</strong> {{ flash_message.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% elif flash_message.type == "warning" %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>⚠️ Warning:</strong> {{ flash_message.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% elif flash_message.type == "info" %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>ℹ️ Info:</strong> {{ flash_message.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

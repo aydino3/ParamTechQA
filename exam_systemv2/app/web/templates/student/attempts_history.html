@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Attempt History - {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📚 Attempt History</h1>
+        <p class="text-secondary">View all your attempts for: <strong>{{ exam.name }}</strong></p>
+    </div>
+</div>
+
+{% if attempts %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">📋 All Attempts</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>📅 Started At</th>
+                        <th>📊 Status</th>
+                        <th>📈 Score</th>
+                        <th>📅 Released At</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in attempts %}
+                    <tr>
+                        <td><strong>#{{ attempt.attempt_number }}</strong></td>
+                        <td>{{ attempt.started_at }}</td>
+                        <td>
+                            {% if attempt.status == "SUBMITTED" %}
+                                <span class="badge badge-success">✅ Submitted</span>
+                            {% elif attempt.status == "IN_PROGRESS" %}
+                                <span class="badge badge-info">🔄 In Progress</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ attempt.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attempt.score is not none %}
+                                {% if attempt.score >= 70 %}
+                                    <span class="badge badge-success">{{ attempt.score }}%</span>
+                                {% elif attempt.score >= 50 %}
+                                    <span class="badge badge-warning">{{ attempt.score }}%</span>
+                                {% else %}
+                                    <span class="badge badge-danger">{{ attempt.score }}%</span>
+                                {% endif %}
+                                <br>
+                                <small class="text-muted">{{ attempt.earned_points }} / {{ attempt.total_points }} points</small>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ attempt.released_at or 'Not released' }}</td>
+                        <td>
+                            {% if attempt.status == "IN_PROGRESS" %}
+                                <a href="/student/attempts/{{ attempt.attempt_id }}" class="btn btn-sm btn-primary">
+                                    📝 Continue
+                                </a>
+                            {% elif attempt.status == "SUBMITTED" and attempt.released_at %}
+                                <a href="/student/results/{{ attempt.attempt_id }}" class="btn btn-sm btn-info">
+                                    📊 View Results
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No action available</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <h4 class="text-muted mb-3">📭 No Attempts Yet</h4>
+        <p class="text-secondary">You haven't started any attempts for this exam yet.</p>
+        <a href="/student/exams/{{ exam.id }}/details" class="btn btn-primary mt-3">
+            🚀 Start Exam
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="/student/dashboard" class="btn btn-secondary">
+        ← Back to Dashboard
+    </a>
+    <a href="/student/exams/{{ exam.id }}/details" class="btn btn-primary">
+        📝 View Exam Details
+    </a>
+</div>
+{% endblock %}
+

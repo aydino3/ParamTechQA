@@ -1,0 +1,18 @@
+{
+  "info": { "name": "Assignments API - Tests", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "teacher_username", "value": "teacher@example.com" },
+    { "key": "teacher_password", "value": "password" },
+    { "key": "exam_id", "value": "" },
+    { "key": "assignment_id", "value": "" }
+  ],
+  "item": [
+    {"name":"Login (Teacher)","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\": \"{{teacher_username}}\", \"password\": \"{{teacher_password}}\"}"},"url":{"raw":"{{base_url}}/api/auth/login","host":["{{base_url}}"],"path":["api","auth","login"]}},"event":[{"listen":"test","script":{"exec":["pm.test('Logged in', function(){pm.response.to.have.status(200);});"]}}]},
+    {"name":"Bulk Assign Students - Positive","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"student_ids\": [1,2,3]}"},"url":{"raw":"{{base_url}}/api/exams/{{exam_id}}/assignments/bulk","host":["{{base_url}}"],"path":["api","exams","{{exam_id}}","assignments","bulk"]}},"event":[{"listen":"test","script":{"exec":["pm.test('200 OK', function(){pm.response.to.have.status(200);});","var json = pm.response.json(); pm.test('returns array', function(){pm.expect(Array.isArray(json)).to.be.true;});"]}}]},
+    {"name":"List Assignments - Positive","request":{"method":"GET","url":{"raw":"{{base_url}}/api/assignments","host":["{{base_url}}"],"path":["api","assignments"]}},"event":[{"listen":"test","script":{"exec":["pm.test('OK', function(){pm.response.to.have.status(200);});"]}}]},
+    {"name":"Get Assignment - Positive","request":{"method":"GET","url":{"raw":"{{base_url}}/api/assignments/{{assignment_id}}","host":["{{base_url}}"],"path":["api","assignments","{{assignment_id}}"]}},"event":[{"listen":"test","script":{"exec":["pm.test('OK', function(){pm.response.to.have.status(200);});"]}}]},
+    {"name":"Delete Assignment - Positive","request":{"method":"DELETE","url":{"raw":"{{base_url}}/api/assignments/{{assignment_id}}","host":["{{base_url}}"],"path":["api","assignments","{{assignment_id}}"]}},"event":[{"listen":"test","script":{"exec":["pm.test('Deleted', function(){pm.expect(pm.response.code).to.be.oneOf([200,204]);});"]}}]},
+    {"name":"Negative: Bulk assign empty list","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"student_ids\": []}"},"url":{"raw":"{{base_url}}/api/exams/{{exam_id}}/assignments/bulk","host":["{{base_url}}"],"path":["api","exams","{{exam_id}}","assignments","bulk"]}},"event":[{"listen":"test","script":{"exec":["pm.test('Expect 4xx', function(){pm.expect(pm.response.code).to.be.within(400,499);});"]}}]}
+  ]
+}

@@ -1,0 +1,3 @@
+-Öğretmen bir öğrencinin sınav sonucuna bakmaya çalıştığı zaman "{"error":{"message":"Insufficient permissions","type":"HTTPException","status_code":403}}"
+	hatası alıyor. (view details butonu)
+-

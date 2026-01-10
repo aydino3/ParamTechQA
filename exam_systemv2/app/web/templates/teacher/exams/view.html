@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📚 {{ exam.name }}</h1>
+        <p class="text-secondary">{{ exam.description }}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">📊 Status</h6>
+                {% if exam.status_value == "PUBLISHED" %}
+                    <span class="badge badge-success">✅ Published</span>
+                {% elif exam.status_value == "DRAFT" %}
+                    <span class="badge badge-warning">📄 Draft</span>
+                {% elif exam.status_value == "ARCHIVED" %}
+                    <span class="badge badge-secondary">📦 Archived</span>
+                {% else %}
+                    <span class="badge badge-secondary">{{ exam.status_value }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">⏱️ Duration</h6>
+                <h5 class="mb-0">{{ exam.duration_minutes }} minutes</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">📝 Grading Policy</h6>
+                {% if exam.grading_policy_value == "IMMEDIATE" or exam.grading_policy_value == "immediate" %}
+                    <span class="badge badge-info">⚡ Immediate</span>
+                {% elif exam.grading_policy_value == "AFTER_END" or exam.grading_policy_value == "after_end" %}
+                    <span class="badge badge-warning">⏰ After End</span>
+                {% elif exam.grading_policy_value == "MANUAL" or exam.grading_policy_value == "manual" %}
+                    <span class="badge badge-secondary">👤 Manual</span>
+                {% else %}
+                    <span class="badge badge-secondary">{{ exam.grading_policy_value }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4 class="mb-3">⚙️ Exam Status Actions</h4>
+        {% if exam.status_value == "DRAFT" or exam.status_value == "draft" %}
+        <form method="post" action="/teacher/exams/{{ exam.id }}/publish" class="d-inline me-2" onsubmit="return confirm('⚠️ Are you sure you want to publish this exam? Students will be able to start taking it.');">
+            <button type="submit" class="btn btn-success btn-lg">
+                ✅ Publish Exam
+            </button>
+        </form>
+        {% elif exam.status_value == "PUBLISHED" or exam.status_value == "published" %}
+        <form method="post" action="/teacher/exams/{{ exam.id }}/unpublish" class="d-inline me-2" onsubmit="return confirm('⚠️ Are you sure you want to unpublish this exam? Students will no longer be able to start new attempts.');">
+            <button type="submit" class="btn btn-warning btn-lg">
+                📄 Unpublish Exam
+            </button>
+        </form>
+        {% elif exam.status_value == "ARCHIVED" or exam.status_value == "archived" %}
+        <form method="post" action="/teacher/exams/{{ exam.id }}/publish" class="d-inline me-2" onsubmit="return confirm('⚠️ Are you sure you want to publish this archived exam? Students will be able to start taking it.');">
+            <button type="submit" class="btn btn-success btn-lg">
+                ✅ Publish Exam
+            </button>
+        </form>
+        {% endif %}
+        {% if exam.status_value != "ARCHIVED" and exam.status_value != "archived" %}
+        <form method="post" action="/teacher/exams/{{ exam.id }}/archive" class="d-inline me-2">
+            <button type="submit" class="btn btn-secondary btn-lg" onclick="return confirm('Are you sure you want to archive this exam?')">
+                📦 Archive Exam
+            </button>
+        </form>
+        {% endif %}
+        <form method="post" action="/teacher/exams/{{ exam.id }}/delete" class="d-inline" onsubmit="return confirm('⚠️ Are you sure you want to delete this exam? This action cannot be undone!');">
+            <button type="submit" class="btn btn-danger btn-lg">
+                🗑️ Delete Exam
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">📝 Exam Questions</h3>
+        <a href="/teacher/exams/{{ exam.id }}/add-question" class="btn btn-primary">
+            ➕ Add Question
+        </a>
+    </div>
+    <div class="card-body">
+        {% if exam_questions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>📝 Question</th>
+                        <th>💎 Points</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eq in exam_questions %}
+                    <tr>
+                        <td><strong>{{ eq.sort_order }}</strong></td>
+                        <td>
+                            <strong>{{ eq.question_title }}</strong><br>
+                            <small class="text-muted">{{ eq.question_body[:100] }}{% if eq.question_body|length > 100 %}...{% endif %}</small>
+                        </td>
+                        <td><span class="badge badge-info">{{ eq.points }} pts</span></td>
+                        <td>
+                            <form method="post" action="/teacher/exams/{{ exam.id }}/questions/{{ eq.question_id }}/remove" 
+                                  class="d-inline" 
+                                  onsubmit="return confirm('Remove this question from exam?');">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <h5 class="text-muted">📭 No questions yet</h5>
+            <p class="text-secondary">Add questions to this exam to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="mb-0">👥 Assign Students</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" action="/teacher/exams/{{ exam.id }}/assign">
+            <div class="mb-3">
+                <label class="form-label">Select Students to Assign:</label>
+                <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                    {% if all_students %}
+                    {% for student in all_students %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="student_ids" value="{{ student.id }}" id="student_{{ student.id }}">
+                        <label class="form-check-label" for="student_{{ student.id }}">
+                            <strong>{{ student.username }}</strong>
+                            {% if student.email %}<small class="text-muted">({{ student.email }})</small>{% endif %}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No students available.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">✅ Assign Selected Students</button>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="mb-0">👥 Current Student Assignments</h3>
+    </div>
+    <div class="card-body">
+        {% if assignments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>👤 Student ID</th>
+                        <th>📊 Status</th>
+                        <th>📅 Assigned At</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td><strong>#{{ assignment.student_id }}</strong></td>
+                        <td>
+                            {% set status_val = assignment.status.value if assignment.status.value else assignment.status %}
+                            {% if status_val == "ASSIGNED" or status_val == "assigned" %}
+                                <span class="badge badge-warning">⏳ Assigned</span>
+                            {% elif status_val == "IN_PROGRESS" or status_val == "in_progress" %}
+                                <span class="badge badge-info">🔄 In Progress</span>
+                            {% elif status_val == "COMPLETED" or status_val == "completed" %}
+                                <span class="badge badge-success">✅ Completed</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ status_val }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ assignment.assigned_at }}</td>
+                        <td>
+                            <form method="post" action="/teacher/exams/{{ exam.id }}/assignments/{{ assignment.id }}/delete" 
+                                  class="d-inline" 
+                                  onsubmit="return confirm('⚠️ Are you sure you want to remove this assignment?');">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <h5 class="text-muted">📭 No assignments yet</h5>
+            <p class="text-secondary">No students have been assigned to this exam.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">📊 Exam Results</h3>
+        <div>
+            <a href="/teacher/exams/{{ exam.id }}/statistics" class="btn btn-info btn-sm">
+                📈 View Statistics
+            </a>
+            <form method="post" action="/teacher/exams/{{ exam.id }}/release-results" class="d-inline" onsubmit="return confirm('⚠️ Are you sure you want to release results for this exam? All students will be able to see their results.');">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    📊 Release Results
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if exam_results %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>👤 Student</th>
+                        <th>📊 Score</th>
+                        <th>📈 Percentage</th>
+                        <th>✅ Result</th>
+                        <th>📅 Released At</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in exam_results %}
+                    <tr>
+                        <td><strong>{{ result.student_username }}</strong></td>
+                        <td>
+                            <span class="badge badge-info">{{ result.earned_points }} / {{ result.total_points }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">{{ result.percentage }}%</span>
+                        </td>
+                        <td>
+                            {% if result.is_passed %}
+                                <span class="badge badge-success">✅ PASSED</span>
+                            {% else %}
+                                <span class="badge badge-danger">❌ FAILED</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ result.released_at or 'Not released' }}</td>
+                        <td>
+                            <a href="/teacher/results/{{ result.attempt_id }}" class="btn btn-sm btn-primary" target="_blank">
+                                📋 View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <h5 class="text-muted">📭 No Results Yet</h5>
+            <p class="text-secondary">No students have submitted their exams yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="mb-3">⚙️ Exam Actions</h4>
+        <a href="/teacher/exams" class="btn btn-secondary btn-lg">
+            ← Back to Exams
+        </a>
+    </div>
+</div>
+{% endblock %}
+

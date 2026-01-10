@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Exam Statistics - {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📈 Exam Statistics</h1>
+        <p class="text-secondary">{{ exam.name }}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.total_attempts }}</h3>
+            <p>Total Attempts</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.graded_attempts }}</h3>
+            <p>Graded Attempts</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.average_score }}%</h3>
+            <p>Average Score</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.highest_score }}%</h3>
+            <p>Highest Score</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">📊 Performance Metrics</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Total Attempts:</strong>
+                    <span class="badge badge-info float-end">{{ statistics.total_attempts }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Graded Attempts:</strong>
+                    <span class="badge badge-success float-end">{{ statistics.graded_attempts }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Average Score:</strong>
+                    <span class="badge badge-primary float-end">{{ statistics.average_score }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Median Score:</strong>
+                    <span class="badge badge-info float-end">{{ statistics.median_score }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Highest Score:</strong>
+                    <span class="badge badge-success float-end">{{ statistics.highest_score }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Lowest Score:</strong>
+                    <span class="badge badge-warning float-end">{{ statistics.lowest_score }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">✅ Pass/Fail Analysis</h3>
+            </div>
+            <div class="card-body">
+                {% if exam.pass_score %}
+                <div class="mb-3">
+                    <strong>Pass Score:</strong>
+                    <span class="badge badge-info float-end">{{ exam.pass_score }}%</span>
+                </div>
+                {% else %}
+                <div class="mb-3">
+                    <strong>Pass Score:</strong>
+                    <span class="badge badge-secondary float-end">Not Set (Default: 50%)</span>
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <strong>Passed:</strong>
+                    <span class="badge badge-success float-end">{{ passed_count }} students</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Failed:</strong>
+                    <span class="badge badge-danger float-end">{{ failed_count }} students</span>
+                </div>
+                {% if statistics.graded_attempts > 0 %}
+                <div class="mb-3">
+                    <strong>Pass Rate:</strong>
+                    <span class="badge badge-primary float-end">
+                        {{ ((passed_count / statistics.graded_attempts) * 100)|round(2) }}%
+                    </span>
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <strong>Total Assignments:</strong>
+                    <span class="badge badge-info float-end">{{ exam_statistics.total_assignments }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Completion Rate:</strong>
+                    <span class="badge badge-warning float-end">{{ exam_statistics.completion_rate }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">📋 Student Results</h3>
+    </div>
+    <div class="card-body">
+        {% if results %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>👤 Student</th>
+                        <th>📊 Score</th>
+                        <th>📈 Percentage</th>
+                        <th>✅ Result</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td><strong>#{{ loop.index }}</strong></td>
+                        <td><strong>{{ result.student_username }}</strong></td>
+                        <td>
+                            <span class="badge badge-info">{{ result.earned_points }} / {{ result.total_points }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">{{ result.percentage }}%</span>
+                        </td>
+                        <td>
+                            {% if result.is_passed %}
+                                <span class="badge badge-success">✅ PASSED</span>
+                            {% else %}
+                                <span class="badge badge-danger">❌ FAILED</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/teacher/results/{{ result.attempt_id }}" class="btn btn-sm btn-primary" target="_blank">
+                                📋 View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <h5 class="text-muted">📭 No Results Yet</h5>
+            <p class="text-secondary">No students have submitted their exams yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="/teacher/exams/{{ exam.id }}" class="btn btn-secondary">
+        ← Back to Exam
+    </a>
+</div>
+{% endblock %}
+

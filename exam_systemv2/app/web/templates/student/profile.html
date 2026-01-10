@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>👤 My Profile</h1>
+        <p class="text-secondary">View and update your profile information</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">📝 Profile Information</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/student/profile">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" value="{{ user_data.username }}" disabled>
+                        <small class="text-muted">Username cannot be changed</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user_data.email or '' }}" placeholder="Enter your email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input type="text" class="form-control" value="{{ user_data.role.value|upper }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Account Created</label>
+                        <input type="text" class="form-control" value="{{ user_data.created_at }}" disabled>
+                    </div>
+                    <button type="submit" class="btn btn-primary">💾 Update Profile</button>
+                    <a href="/student/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">⚙️ Account Settings</h5>
+            </div>
+            <div class="card-body">
+                <a href="/student/change-password" class="btn btn-warning btn-block w-100 mb-2">
+                    🔒 Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

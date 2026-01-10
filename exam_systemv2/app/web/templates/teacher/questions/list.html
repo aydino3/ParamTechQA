@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Questions{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h1>📝 Questions</h1>
+            <p class="text-secondary">Manage your question bank</p>
+        </div>
+        <a href="/teacher/questions/new" class="btn btn-primary btn-lg">
+            ➕ Create New Question
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="mb-0">🔍 Filter & Search</h3>
+    </div>
+    <div class="card-body">
+        <form method="get" action="/teacher/questions" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="{{ search }}" placeholder="Search by title or body...">
+                </div>
+                <div class="col-md-2">
+                    <label for="tags" class="form-label">Tags</label>
+                    <input type="text" class="form-control" id="tags" name="tags" 
+                           value="{{ tags_filter }}" placeholder="tag1, tag2">
+                    <small class="form-text text-muted">Comma-separated</small>
+                </div>
+                <div class="col-md-2">
+                    <label for="difficulty" class="form-label">Difficulty</label>
+                    <select class="form-control" id="difficulty" name="difficulty">
+                        <option value="">All</option>
+                        <option value="1" {% if difficulty_filter == 1 %}selected{% endif %}>1</option>
+                        <option value="2" {% if difficulty_filter == 2 %}selected{% endif %}>2</option>
+                        <option value="3" {% if difficulty_filter == 3 %}selected{% endif %}>3</option>
+                        <option value="4" {% if difficulty_filter == 4 %}selected{% endif %}>4</option>
+                        <option value="5" {% if difficulty_filter == 5 %}selected{% endif %}>5</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="type" class="form-label">Type</label>
+                    <select class="form-control" id="type" name="type">
+                        <option value="">All</option>
+                        <option value="multiple_choice" {% if type_filter == "multiple_choice" %}selected{% endif %}>Multiple Choice</option>
+                        <option value="true_false" {% if type_filter == "true_false" %}selected{% endif %}>True/False</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
+                        <a href="/teacher/questions" class="btn btn-secondary">🔄 Clear</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">📋 Question Bank</h3>
+    </div>
+    <div class="card-body">
+        {% if questions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>📝 Title</th>
+                        <th>🏷️ Type</th>
+                        <th>📊 Difficulty</th>
+                        <th>🏷️ Tags</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in questions %}
+                    <tr>
+                        <td><strong>#{{ question.id }}</strong></td>
+                        <td><strong>{{ question.title }}</strong></td>
+                        <td>
+                            {% set type_val = question.type.value if question.type.value else question.type %}
+                            {% if type_val == "MULTIPLE_CHOICE" %}
+                                <span class="badge badge-info">🔘 Multiple Choice</span>
+                            {% elif type_val == "TRUE_FALSE" %}
+                                <span class="badge badge-warning">✓ True/False</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ type_val }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if question.difficulty %}
+                                <span class="badge badge-info">{{ question.difficulty.value if question.difficulty.value else question.difficulty }}</span>
+                            {% else %}
+                                <span class="badge badge-secondary">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if question.tags and question.tags|length > 0 %}
+                                {% for tag in question.tags %}
+                                    <span class="badge badge-secondary me-1">{{ tag }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">No tags</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/teacher/questions/{{ question.id }}/edit" class="btn btn-sm btn-primary me-1">
+                                ✏️ Edit
+                            </a>
+                            <form method="post" action="/teacher/questions/{{ question.id }}/delete" 
+                                  class="d-inline" 
+                                  onsubmit="return confirm('⚠️ Are you sure you want to delete this question? This action cannot be undone!');">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if total_pages > 1 %}
+        <nav aria-label="Question pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if tags_filter %}&tags={{ tags_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+                
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ p }}</span>
+                    </li>
+                    {% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if tags_filter %}&tags={{ tags_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}">{{ p }}</a>
+                    </li>
+                    {% elif p == 4 or p == total_pages - 3 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page < total_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if tags_filter %}&tags={{ tags_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}{% if type_filter %}&type={{ type_filter }}{% endif %}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="text-center text-muted mt-2">
+            Showing {{ (page - 1) * per_page + 1 }} to {{ [page * per_page, total]|min }} of {{ total }} questions
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-5">
+            <h4 class="text-muted">📭 No questions yet</h4>
+            <p class="text-secondary">Create your first question to build your question bank!</p>
+            <a href="/teacher/questions/new" class="btn btn-primary mt-3">
+                ➕ Create Your First Question
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>👑 Admin Dashboard</h1>
+        <p class="text-secondary">Welcome, {{ user.username }}! Manage the entire system.</p>
+    </div>
+</div>
+
+{% if stats %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.users.total }}</h3>
+            <p>Total Users</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.users.teachers }}</h3>
+            <p>Teachers</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.users.students }}</h3>
+            <p>Students</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.exams.total }}</h3>
+            <p>Exams</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.questions.total }}</h3>
+            <p>Questions</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.attempts.total }}</h3>
+            <p>Attempts</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.assignments.total }}</h3>
+            <p>Assignments</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ stats.exams.published }}</h3>
+            <p>Published Exams</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">👥 User Management</h5>
+            </div>
+            <div class="card-body">
+                <p>Manage all users in the system.</p>
+                <a href="/admin/users" class="btn btn-primary btn-lg">👥 Manage Users</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📚 Teacher Functions</h5>
+            </div>
+            <div class="card-body">
+                <p>Access teacher functions to manage questions and exams.</p>
+                <div class="d-flex gap-2">
+                    <a href="/teacher/dashboard" class="btn btn-secondary">📊 Teacher Dashboard</a>
+                    <a href="/teacher/questions" class="btn btn-secondary">📝 Questions</a>
+                    <a href="/teacher/exams" class="btn btn-secondary">📚 Exams</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔗 Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><a href="/docs">📖 API Documentation</a></li>
+                    <li><a href="/admin/users">👥 User Management</a></li>
+                    <li><a href="/teacher/dashboard">📊 Teacher Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h1>👤 My Profile</h1>
+            <p class="text-secondary">View and manage your profile information</p>
+        </div>
+        <a href="/teacher/profile/edit" class="btn btn-primary btn-lg">
+            ✏️ Edit Profile
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">📝 Personal Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>First Name:</strong>
+                        <p class="mt-1">{{ profile.first_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Last Name:</strong>
+                        <p class="mt-1">{{ profile.last_name }}</p>
+                    </div>
+                </div>
+                
+                {% if profile.bio %}
+                <div class="mb-3">
+                    <strong>Bio:</strong>
+                    <p class="mt-1">{{ profile.bio }}</p>
+                </div>
+                {% endif %}
+                
+                {% if profile.phone %}
+                <div class="mb-3">
+                    <strong>Phone:</strong>
+                    <p class="mt-1">{{ profile.phone }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">📚 Subjects</h3>
+            </div>
+            <div class="card-body">
+                {% if profile.subjects %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for subject in profile.subjects %}
+                    <span class="badge badge-primary" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                        {{ subject.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No subjects assigned. Edit your profile to add subjects.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">ℹ️ Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-2">
+                    <strong>Created:</strong> 
+                    {% if profile.created_at %}
+                        {% if profile.created_at.strftime %}
+                            {{ profile.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {% else %}
+                            {{ profile.created_at }}
+                        {% endif %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+                <p class="text-muted small mb-0">
+                    <strong>Last Updated:</strong> 
+                    {% if profile.updated_at %}
+                        {% if profile.updated_at.strftime %}
+                            {{ profile.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {% else %}
+                            {{ profile.updated_at }}
+                        {% endif %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

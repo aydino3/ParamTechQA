@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}My Exams{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📚 My Exams</h1>
+        <p class="text-secondary">View and manage your exam assignments</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">📋 Exam Assignments</h3>
+    </div>
+    <div class="card-body">
+        {% if assignments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>📝 Exam Name</th>
+                        <th>📊 Status</th>
+                        <th>📅 Assigned At</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td><strong>{{ assignment.exam_name or ('Exam #' ~ assignment.exam_id) }}</strong></td>
+                        <td>
+                            {% set status_val = assignment.status_value if assignment.status_value else (assignment.status.value if assignment.status.value else assignment.status) %}
+                            {% if status_val == "ASSIGNED" or status_val == "assigned" %}
+                                <span class="badge badge-warning">⏳ Assigned</span>
+                            {% elif status_val == "IN_PROGRESS" or status_val == "in_progress" %}
+                                <span class="badge badge-info">🔄 In Progress</span>
+                            {% elif status_val == "COMPLETED" or status_val == "completed" %}
+                                <span class="badge badge-success">✅ Completed</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ status_val }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ assignment.assigned_at }}</td>
+                        <td>
+                            {% set status_val = assignment.status_value if assignment.status_value else (assignment.status.value if assignment.status.value else assignment.status) %}
+                            {% if status_val == "ASSIGNED" or status_val == "assigned" %}
+                            <form method="post" action="/student/exams/{{ assignment.id }}/start" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    🚀 Start Exam
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <h4 class="text-muted">📭 No assignments yet</h4>
+            <p class="text-secondary">You don't have any exam assignments at the moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

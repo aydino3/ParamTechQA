@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}My Statistics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📈 My Statistics</h1>
+        <p class="text-secondary">Track your academic performance and progress</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.total_completed }}</h3>
+            <p>Completed Exams</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.average_score }}%</h3>
+            <p>Average Score</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.highest_score }}%</h3>
+            <p>Highest Score</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.pass_rate }}%</h3>
+            <p>Pass Rate</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">📊 Performance Overview</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Total Assignments:</strong>
+                    <span class="badge badge-info float-end">{{ statistics.total_assignments }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Completed Exams:</strong>
+                    <span class="badge badge-success float-end">{{ statistics.total_completed }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Average Score:</strong>
+                    <span class="badge badge-primary float-end">{{ statistics.average_score }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Highest Score:</strong>
+                    <span class="badge badge-success float-end">{{ statistics.highest_score }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Lowest Score:</strong>
+                    <span class="badge badge-warning float-end">{{ statistics.lowest_score }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Pass Rate:</strong>
+                    <span class="badge badge-info float-end">{{ statistics.pass_rate }}%</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Recent (Last 30 Days):</strong>
+                    <span class="badge badge-secondary float-end">{{ statistics.recent_completed }} exams</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">📅 Upcoming Exams</h3>
+            </div>
+            <div class="card-body">
+                {% if upcoming_exams %}
+                <div class="list-group">
+                    {% for exam in upcoming_exams %}
+                    <div class="list-group-item">
+                        <strong>{{ exam.exam_name }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            Starts in {{ exam.days_until }} day{{ 's' if exam.days_until != 1 else '' }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No upcoming exams in the next 7 days</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="/student/dashboard" class="btn btn-secondary">
+        ← Back to Dashboard
+    </a>
+    <a href="/student/results" class="btn btn-primary">
+        📊 View All Results
+    </a>
+</div>
+{% endblock %}
+

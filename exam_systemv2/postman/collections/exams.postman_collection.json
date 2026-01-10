@@ -1,0 +1,58 @@
+{
+  "info": {
+    "name": "Exams API - Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "admin_username", "value": "admin" },
+    { "key": "admin_password", "value": "admin123" }
+  ],
+  "item": [
+    {
+      "name": "Login (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {"mode":"raw","raw":"{\"username\": \"{{admin_username}}\", \"password\": \"{{admin_password}}\"}"},
+        "url": {"raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api","auth","login"] }
+      },
+      "event": [{"listen":"test","script":{"exec":["pm.test('Login succeeded', function(){pm.response.to.have.status(200);});","pm.test('Set-Cookie present', function(){pm.expect(pm.response.headers.has('set-cookie') || pm.response.headers.has('Set-Cookie')).to.be.ok;});"]}}]
+    },
+    {
+      "name": "Create Exam - Positive",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {"mode":"raw","raw":"{\"name\": \"Automation Test Exam\", \"description\": \"API test exam\", \"duration\": 60}"},
+        "url": {"raw": "{{base_url}}/api/exams", "host": ["{{base_url}}"], "path": ["api","exams"] }
+      },
+      "event": [{"listen":"test","script":{"exec":["pm.test('Status 200 or 201', function(){pm.expect(pm.response.code).to.be.oneOf([200,201]);});","var json = pm.response.json(); pm.test('Has id', function(){pm.expect(json.id).to.be.a('number');});","pm.environment.set('exam_id', json.id);"]}}]
+    },
+    {
+      "name": "Get Exam - Positive",
+      "request": {"method":"GET","url":{"raw":"{{base_url}}/api/exams/{{exam_id}}","host":["{{base_url}}"],"path":["api","exams","{{exam_id}}"]}},
+      "event": [{"listen":"test","script":{"exec":["pm.test('Status 200', function(){pm.response.to.have.status(200);});","var json = pm.response.json(); pm.test('IDs match', function(){pm.expect(json.id).to.eql(Number(pm.environment.get('exam_id')));});"]}}]
+    },
+    {
+      "name": "Update Exam - Positive",
+      "request": {"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"name\": \"Automation Test Exam - Updated\"}"},"url":{"raw":"{{base_url}}/api/exams/{{exam_id}}","host":["{{base_url}}"],"path":["api","exams","{{exam_id}}"]}},
+      "event": [{"listen":"test","script":{"exec":["pm.test('Status 200', function(){pm.response.to.have.status(200);});","var json = pm.response.json(); pm.test('Name updated', function(){pm.expect(json.name).to.include('Updated');});"]}}]
+    },
+    {
+      "name": "Delete Exam - Positive",
+      "request": {"method":"DELETE","url":{"raw":"{{base_url}}/api/exams/{{exam_id}}","host":["{{base_url}}"],"path":["api","exams","{{exam_id}}"]}},
+      "event": [{"listen":"test","script":{"exec":["pm.test('Status 200 or 204', function(){pm.expect(pm.response.code).to.be.oneOf([200,204]);});"]}}]
+    },
+    {
+      "name": "Create Exam - Invalid Data (Negative)",
+      "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"name\": \"\", \"duration\": -5}"},"url":{"raw":"{{base_url}}/api/exams","host":["{{base_url}}"],"path":["api","exams"]}},
+      "event": [{"listen":"test","script":{"exec":["pm.test('Validation error 4xx', function(){pm.expect(pm.response.code).to.be.within(400,499);});"]}}]
+    },
+    {
+      "name": "Edge Case: Very Long Name",
+      "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"name\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"duration\": 10}"},"url":{"raw":"{{base_url}}/api/exams","host":["{{base_url}}"],"path":["api","exams"]}},
+      "event": [{"listen":"test","script":{"exec":["pm.test('Edge: expect client or server 4xx/5xx or accept', function(){pm.expect(pm.response.code).to.be.oneOf([200,201,400,413,422,500]);});"]}}]
+    }
+  ]
+}

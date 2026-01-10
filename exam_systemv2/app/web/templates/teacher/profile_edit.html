@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>✏️ Edit Profile</h1>
+        <p class="text-secondary">Update your profile information</p>
+    </div>
+</div>
+
+<form method="post" action="/teacher/profile/edit">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">📝 Personal Information</h5>
+        </div>
+        <div class="card-body">
+            {% set form_data = request.session.get("form_data", {}) if request else {} %}
+            {% set existing_first_name = profile.first_name if profile else (form_data.get('first_name', '') if form_data else (default_first_name if default_first_name else '')) %}
+            {% set existing_last_name = profile.last_name if profile else (form_data.get('last_name', '') if form_data else (default_last_name if default_last_name else '')) %}
+            {% set existing_bio = profile.bio if profile and profile.bio else (form_data.get('bio', '') if form_data else '') %}
+            {% set existing_phone = profile.phone if profile and profile.phone else (form_data.get('phone', '') if form_data else '') %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" 
+                               value="{{ existing_first_name }}" placeholder="Auto-filled from username if empty">
+                        <small class="form-text text-muted">Leave empty to auto-fill from username</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" 
+                               value="{{ existing_last_name }}" placeholder="Auto-filled from username if empty">
+                        <small class="form-text text-muted">Leave empty to auto-fill from username</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="bio" class="form-label">Bio</label>
+                <textarea class="form-control" id="bio" name="bio" rows="4">{{ existing_bio }}</textarea>
+                <small class="form-text text-muted">Tell us about yourself, your experience, and expertise</small>
+            </div>
+            
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone" 
+                       value="{{ existing_phone }}" placeholder="e.g., +90 555 123 4567">
+                <small class="form-text text-muted">Optional contact phone number</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">📚 Subjects</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-3">Select the subjects you teach. You can select multiple subjects.</p>
+            
+            {% if subjects %}
+            <div class="row">
+                {% for subject in subjects %}
+                <div class="col-md-6 mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" 
+                               id="subject_{{ subject.id }}" 
+                               name="subject_ids" 
+                               value="{{ subject.id }}"
+                               {% if existing_subject_ids and subject.id in existing_subject_ids %}checked{% endif %}>
+                        <label class="form-check-label" for="subject_{{ subject.id }}">
+                            <strong>{{ subject.name }}</strong>
+                            {% if subject.description %}
+                            <br><small class="text-muted">{{ subject.description }}</small>
+                            {% endif %}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <strong>⚠️ No subjects available</strong>
+                <p class="mb-0">Please contact an administrator to add subjects to the system.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-lg">✅ Save Profile</button>
+        <a href="/teacher/dashboard" class="btn btn-secondary btn-lg">❌ Cancel</a>
+    </div>
+</form>
+{% endblock %}
+

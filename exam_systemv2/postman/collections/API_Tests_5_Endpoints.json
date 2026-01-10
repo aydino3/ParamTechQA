@@ -1,0 +1,2524 @@
+{
+	"info": {
+		"name": "Exam System API Tests - 5 Endpoints",
+		"description": "Comprehensive API tests covering CRUD operations: Login, Create/Update/Delete Question, Create/Update/Delete Exam, Start Attempt, Get Result. Includes positive, negative, edge cases, and data integrity scenarios.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "teacher_username",
+			"value": "emily.clark",
+			"type": "string"
+		},
+		{
+			"key": "teacher_password",
+			"value": "teacher123",
+			"type": "string"
+		},
+		{
+			"key": "student_username",
+			"value": "nicole.martinez",
+			"type": "string"
+		},
+		{
+			"key": "student_password",
+			"value": "student123",
+			"type": "string"
+		},
+		{
+			"key": "admin_username",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "admin_password",
+			"value": "admin123",
+			"type": "string"
+		},
+		{
+			"key": "teacher_session",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "student_session",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_question_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_exam_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "assignment_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "attempt_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Login API",
+			"item": [
+				{
+					"name": "Positive - Login as Teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.eql('Login successful');",
+									"});",
+									"pm.test(\"Response has user_id\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('user_id');",
+									"    pm.expect(jsonData.user_id).to.be.a('number');",
+									"});",
+									"pm.test(\"Session cookie is set\", function () {",
+									"    pm.expect(pm.cookies.has('session')).to.be.true;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{teacher_username}}\",\n    \"password\": \"{{teacher_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Login as Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Login successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Login successful');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{student_username}}\",\n    \"password\": \"{{student_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Admin login successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Login successful');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{admin_username}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Invalid Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 400]);",
+									"});",
+									"pm.test(\"Error message present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"nonexistent_user\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Invalid Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{teacher_username}}\",\n    \"password\": \"wrong_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Missing Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"pm.test(\"Validation error for username\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.detail).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"{{teacher_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Missing Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{teacher_username}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Empty Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 401\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 401]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"\",\n    \"password\": \"{{teacher_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Empty Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 401\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 401]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{teacher_username}}\",\n    \"password\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Very Long Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 401\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 401]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"a\".repeat(500),\n    \"password\": \"{{teacher_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - SQL Injection Attempt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 422]);",
+									"});",
+									"pm.test(\"No SQL error in response\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include('SQL');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin' OR '1'='1\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Case Sensitive Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 401\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{teacher_username}}\".toUpperCase(),\n    \"password\": \"{{teacher_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Special Characters in Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([401, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"user@#$%^&*()\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Create Question API",
+			"item": [
+				{
+					"name": "Positive - Create Multiple Choice Question",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',",
+									"    method: 'POST',",
+									"    header: {'Content-Type': 'application/json'},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            username: pm.variables.get('teacher_username'),",
+									"            password: pm.variables.get('teacher_password')",
+									"        })",
+									"    }",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Question created with ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.variables.set('created_question_id', jsonData.id);",
+									"});",
+									"pm.test(\"Question type is multiple_choice\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.type).to.eql('multiple_choice');",
+									"});",
+									"pm.test(\"Options count is 4\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.options).to.have.lengthOf(4);",
+									"});",
+									"pm.test(\"Exactly one correct option\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var correctOptions = jsonData.options.filter(opt => opt.is_correct);",
+									"    pm.expect(correctOptions).to.have.lengthOf(1);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"What is 2 + 2?\",\n    \"body\": \"Select the correct answer.\",\n    \"difficulty\": 2,\n    \"type\": \"multiple_choice\",\n    \"explanation\": \"Basic arithmetic: 2 + 2 = 4\",\n    \"options\": [\n        {\"text\": \"3\", \"is_correct\": false},\n        {\"text\": \"4\", \"is_correct\": true},\n        {\"text\": \"5\", \"is_correct\": false},\n        {\"text\": \"6\", \"is_correct\": false}\n    ],\n    \"tags\": [\"math\", \"arithmetic\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Create True/False Question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Question type is true_false\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.type).to.eql('true_false');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"The Earth is round.\",\n    \"body\": \"Is this statement true or false?\",\n    \"difficulty\": 1,\n    \"type\": \"true_false\",\n    \"explanation\": \"The Earth is approximately spherical.\",\n    \"options\": [\n        {\"text\": \"True\", \"is_correct\": true},\n        {\"text\": \"False\", \"is_correct\": false}\n    ],\n    \"tags\": [\"science\", \"geography\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Missing Required Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"pm.test(\"Validation error details present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('detail');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Incomplete Question\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Invalid Question Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test\",\n    \"body\": \"Test body\",\n    \"difficulty\": 1,\n    \"type\": \"invalid_type\",\n    \"options\": [{\"text\": \"Option 1\", \"is_correct\": true}]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Negative - No Correct Option",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Question\",\n    \"body\": \"Test body\",\n    \"difficulty\": 1,\n    \"type\": \"multiple_choice\",\n    \"options\": [\n        {\"text\": \"Option 1\", \"is_correct\": false},\n        {\"text\": \"Option 2\", \"is_correct\": false}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Student)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test\",\n    \"body\": \"Test\",\n    \"difficulty\": 1,\n    \"type\": \"multiple_choice\",\n    \"options\": [{\"text\": \"Option\", \"is_correct\": true}]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Difficulty Out of Range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test\",\n    \"body\": \"Test\",\n    \"difficulty\": 10,\n    \"type\": \"multiple_choice\",\n    \"options\": [{\"text\": \"Option\", \"is_correct\": true}]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Very Long Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"A\".repeat(1000),\n    \"body\": \"Test body\",\n    \"difficulty\": 1,\n    \"type\": \"multiple_choice\",\n    \"options\": [{\"text\": \"Option\", \"is_correct\": true}]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Empty Options Array",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test\",\n    \"body\": \"Test\",\n    \"difficulty\": 1,\n    \"type\": \"multiple_choice\",\n    \"options\": []\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Multiple Correct Options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test\",\n    \"body\": \"Test\",\n    \"difficulty\": 1,\n    \"type\": \"multiple_choice\",\n    \"options\": [\n        {\"text\": \"Option 1\", \"is_correct\": true},\n        {\"text\": \"Option 2\", \"is_correct\": true}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Special Characters in Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Special characters preserved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.title).to.include('@#$');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Question with @#$ special chars\",\n    \"body\": \"Test body\",\n    \"difficulty\": 1,\n    \"type\": \"multiple_choice\",\n    \"options\": [{\"text\": \"Option\", \"is_correct\": true}]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2.5. Update Question API",
+			"item": [
+				{
+					"name": "Positive - Update Question Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Title updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.title).to.eql('Updated Question Title');",
+									"});",
+									"pm.test(\"Question ID unchanged\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id.toString()).to.eql(pm.variables.get('created_question_id'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Question Title\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Update Question Difficulty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Difficulty updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.difficulty).to.eql(5);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"difficulty\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Update Question Options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Options updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.options).to.have.lengthOf(3);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"options\": [\n        {\"text\": \"Option A\", \"is_correct\": false},\n        {\"text\": \"Option B\", \"is_correct\": true},\n        {\"text\": \"Option C\", \"is_correct\": false}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Update Non-Existent Question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Title\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "99999"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Student)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Title\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Update with Invalid Difficulty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"difficulty\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Update with Empty Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Partial Update Preserves Other Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Other fields preserved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('body');",
+									"    pm.expect(jsonData).to.have.property('type');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"explanation\": \"Updated explanation text\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2.6. Delete Question API",
+			"item": [
+				{
+					"name": "Positive - Delete Question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Delete message present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('deleted');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Delete Non-Existent Question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "99999"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Student)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Delete with Zero ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/0",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "0"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Delete with Negative ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/-1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "-1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Delete with Non-Numeric ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/abc",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "abc"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Verify Question Deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"// Verify question is actually deleted by trying to get it",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/questions/' + pm.variables.get('created_question_id'),",
+									"    method: 'GET',",
+									"    header: {'Content-Type': 'application/json'}",
+									"}, function (err, res) {",
+									"    pm.test('Question no longer exists', function () {",
+									"        pm.expect(res.code).to.be.oneOf([404, 401]);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/questions/{{created_question_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "questions", "{{created_question_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Create Exam API",
+			"item": [
+				{
+					"name": "Positive - Create Exam with All Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Exam created with ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.variables.set('created_exam_id', jsonData.id);",
+									"});",
+									"pm.test(\"Grading policy is set\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('grading_policy');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Final Exam - Mathematics\",\n    \"description\": \"Comprehensive mathematics exam covering algebra and calculus\",\n    \"duration_minutes\": 120,\n    \"start_at\": \"2024-12-20T09:00:00\",\n    \"end_at\": \"2024-12-20T11:00:00\",\n    \"attempts_allowed\": 2,\n    \"shuffle_questions\": true,\n    \"shuffle_options\": true,\n    \"grading_policy\": \"immediate\",\n    \"pass_score\": 60\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Create Exam with Minimal Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Quick Test\",\n    \"duration_minutes\": 30,\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Missing Required Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"duration_minutes\": 60,\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Missing Duration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Invalid Grading Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"duration_minutes\": 60,\n    \"grading_policy\": \"invalid_policy\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Student)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test\",\n    \"duration_minutes\": 30,\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Zero Duration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"duration_minutes\": 0,\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Negative Duration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"duration_minutes\": -10,\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - End Date Before Start Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"duration_minutes\": 60,\n    \"start_at\": \"2024-12-20T11:00:00\",\n    \"end_at\": \"2024-12-20T09:00:00\",\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Very Long Exam Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"A\".repeat(500),\n    \"duration_minutes\": 60,\n    \"grading_policy\": \"immediate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Pass Score > 100",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"duration_minutes\": 60,\n    \"grading_policy\": \"immediate\",\n    \"pass_score\": 150\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Negative Attempts Allowed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam\",\n    \"duration_minutes\": 60,\n    \"grading_policy\": \"immediate\",\n    \"attempts_allowed\": -1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3.5. Update Exam API",
+			"item": [
+				{
+					"name": "Positive - Update Exam Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Name updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql('Updated Exam Name');",
+									"});",
+									"pm.test(\"Exam ID unchanged\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id.toString()).to.eql(pm.variables.get('created_exam_id'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Exam Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Update Exam Duration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Duration updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.duration_minutes).to.eql(90);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"duration_minutes\": 90\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Update Exam Grading Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Grading policy updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.grading_policy).to.eql('after_end');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grading_policy\": \"after_end\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Update Non-Existent Exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "99999"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Student)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Update with Invalid Grading Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grading_policy\": \"invalid_policy\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Update with Zero Duration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([422, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"duration_minutes\": 0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Partial Update Preserves Other Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Other fields preserved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('description');",
+									"    pm.expect(jsonData).to.have.property('grading_policy');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3.6. Delete Exam API",
+			"item": [
+				{
+					"name": "Positive - Delete Exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Delete successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Delete Non-Existent Exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "99999"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Student)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Delete with Zero ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/0",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "0"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Delete with Negative ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/-1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "-1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Delete with Non-Numeric ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/abc",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "abc"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Verify Exam Deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"// Verify exam is actually deleted by trying to get it",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/exams/' + pm.variables.get('created_exam_id'),",
+									"    method: 'GET',",
+									"    header: {'Content-Type': 'application/json'}",
+									"}, function (err, res) {",
+									"    pm.test('Exam no longer exists', function () {",
+									"        pm.expect(res.code).to.be.oneOf([404, 401]);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "{{created_exam_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Start Attempt API",
+			"item": [
+				{
+					"name": "Positive - Start Attempt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Attempt created with ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.variables.set('attempt_id', jsonData.id);",
+									"});",
+									"pm.test(\"Attempt has status\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"});",
+									"pm.test(\"Started at timestamp present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('started_at');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start?assignment_id={{assignment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"],
+							"query": [
+								{"key": "assignment_id", "value": "{{assignment_id}}"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Negative - Invalid Assignment ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 400\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 400]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start?assignment_id=99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"],
+							"query": [
+								{"key": "assignment_id", "value": "99999"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Negative - Missing Assignment ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized (Teacher)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start?assignment_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"],
+							"query": [
+								{"key": "assignment_id", "value": "1"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Non-Numeric Assignment ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start?assignment_id=abc",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"],
+							"query": [
+								{"key": "assignment_id", "value": "abc"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Zero Assignment ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start?assignment_id=0",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"],
+							"query": [
+								{"key": "assignment_id", "value": "0"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Start Attempt Twice (Idempotent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Same attempt ID returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var firstAttemptId = pm.variables.get('attempt_id');",
+									"    if (firstAttemptId) {",
+									"        pm.expect(jsonData.id.toString()).to.eql(firstAttemptId);",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/api/attempts/start?assignment_id={{assignment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "attempts", "start"],
+							"query": [
+								{"key": "assignment_id", "value": "{{assignment_id}}"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Get Result API",
+			"item": [
+				{
+					"name": "Positive - Get Result as Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Result has score\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('score');",
+									"});",
+									"pm.test(\"Result has total_points\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('total_points');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/{{attempt_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "{{attempt_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Positive - Get Result as Teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Teacher can view student result\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('score');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/{{attempt_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "{{attempt_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Invalid Attempt ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "99999"]
+						}
+					}
+				},
+				{
+					"name": "Negative - Unauthorized Access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 or 401\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "1"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Non-Numeric Attempt ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/abc",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "abc"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Zero Attempt ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/0",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "0"]
+						}
+					}
+				},
+				{
+					"name": "Edge Case - Negative Attempt ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 422]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/-1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "-1"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Result Not Available Yet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"});",
+									"pm.test(\"Response indicates result availability\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (pm.response.code === 200) {",
+									"        pm.expect(jsonData).to.have.property('score');",
+									"    } else {",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/{{attempt_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "{{attempt_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Data Integrity - Verify Score Calculation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Score is within valid range\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.score !== undefined && jsonData.total_points !== undefined) {",
+									"        pm.expect(jsonData.score).to.be.at.least(0);",
+									"        pm.expect(jsonData.score).to.be.at.most(jsonData.total_points);",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/results/{{attempt_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "results", "{{attempt_id}}"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

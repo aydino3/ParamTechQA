@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>👨‍🏫 Teacher Dashboard</h1>
+        <p class="text-secondary">Manage your questions, exams, and student assignments</p>
+    </div>
+</div>
+
+{% if statistics %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.total_questions }}</h3>
+            <p>📝 Total Questions</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.total_exams }}</h3>
+            <p>📚 Total Exams</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ statistics.total_attempts }}</h3>
+            <p>📊 Graded Attempts</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>
+                {% if statistics.total_passed > 0 %}
+                    <span class="badge badge-success">{{ statistics.total_passed }} ✅</span>
+                {% else %}
+                    <span class="text-muted">0</span>
+                {% endif %}
+            </h3>
+            <p>Passed Students</p>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ questions|length if questions else 0 }}</h3>
+            <p>📝 Total Questions</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ exams|length if exams else 0 }}</h3>
+            <p>📚 Total Exams</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ exams|selectattr('status', 'equalto', 'PUBLISHED')|list|length if exams else 0 }}</h3>
+            <p>✅ Published Exams</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <h3>{{ exams|selectattr('status', 'equalto', 'DRAFT')|list|length if exams else 0 }}</h3>
+            <p>📄 Draft Exams</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📝 Recent Questions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2 mb-3">
+                    <a href="/teacher/questions/new" class="btn btn-primary">
+                        ➕ Create New Question
+                    </a>
+                    <a href="/teacher/questions" class="btn btn-secondary">
+                        📋 View All Questions
+                    </a>
+                </div>
+                {% if questions %}
+                <ul class="list-group">
+                    {% for question in questions[:5] %}
+                    <li class="list-group-item">
+                        <strong>{{ question.title }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            Difficulty: 
+                            <span class="badge badge-info">{{ question.difficulty.value if question.difficulty.value else question.difficulty }}</span>
+                        </small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center py-3">
+                    <p class="text-muted">No questions yet. Create your first question!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📚 Recent Exams</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2 mb-3">
+                    <a href="/teacher/exams/new" class="btn btn-primary">
+                        ➕ Create New Exam
+                    </a>
+                    <a href="/teacher/exams" class="btn btn-secondary">
+                        📋 View All Exams
+                    </a>
+                </div>
+                {% if exams %}
+                <ul class="list-group">
+                    {% for exam in exams[:5] %}
+                    <li class="list-group-item">
+                        <strong>{{ exam.name }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            Status: 
+                            {% if exam.status.value == "PUBLISHED" %}
+                                <span class="badge badge-success">✅ Published</span>
+                            {% elif exam.status.value == "DRAFT" %}
+                                <span class="badge badge-warning">📄 Draft</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ exam.status.value if exam.status.value else exam.status }}</span>
+                            {% endif %}
+                        </small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center py-3">
+                    <p class="text-muted">No exams yet. Create your first exam!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

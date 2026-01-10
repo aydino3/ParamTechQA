@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Exam Details - {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>📝 {{ exam.name }}</h1>
+        <p class="text-secondary">Review exam information before starting</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">📋 Exam Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Description:</strong>
+                    <p class="mt-2">{{ exam.description }}</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Duration:</strong>
+                        <span class="badge badge-info">{{ exam.duration_minutes }} minutes</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Questions:</strong>
+                        <span class="badge badge-info">{{ exam.question_count }} questions</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Pass Score:</strong>
+                        <span class="badge badge-success">{{ exam.pass_score }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">📅 Schedule</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Start Date:</strong>
+                    <span class="ms-2">{{ exam.start_at }}</span>
+                </div>
+                <div class="mb-3">
+                    <strong>End Date:</strong>
+                    <span class="ms-2">{{ exam.end_at }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">⚙️ Grading Policy</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Grading Policy:</strong> {{ exam.grading_policy|replace('_', ' ')|title }}</p>
+                {% if exam.grading_policy == 'IMMEDIATE' or exam.grading_policy == 'immediate' %}
+                <p class="text-muted">Your results will be available immediately after submission.</p>
+                {% elif exam.grading_policy == 'AFTER_END' or exam.grading_policy == 'after_end' %}
+                <p class="text-muted">Your results will be available after the exam end date.</p>
+                {% elif exam.grading_policy == 'MANUAL' or exam.grading_policy == 'manual' %}
+                <p class="text-muted">Your results will be available after the teacher reviews and releases them.</p>
+                {% else %}
+                <p class="text-muted">Your results will be available according to the exam's grading policy.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🚀 Ready to Start?</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Make sure you have:</p>
+                <ul>
+                    <li>Enough time to complete the exam</li>
+                    <li>A stable internet connection</li>
+                    <li>No distractions</li>
+                </ul>
+                <form method="post" action="/student/exams/{{ exam.assignment_id }}/start" class="mt-4">
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        🚀 Start Exam
+                    </button>
+                </form>
+                <a href="/student/dashboard" class="btn btn-secondary w-100 mt-2">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
