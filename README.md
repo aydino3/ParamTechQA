@@ -9,6 +9,7 @@ Aydın Özkan - 2103508
 Burak Bor - 2201317
 Mehmet Fatih Yücel - 1902608
 Ömer Berat Fırat - 2102197
+---
 
 ## Prerequisites
 
