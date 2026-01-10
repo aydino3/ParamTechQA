@@ -5,6 +5,7 @@ import com.paramtech.utils.ConfigReader;
 import com.paramtech.utils.WaitUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -14,19 +15,43 @@ import java.util.List;
 public abstract class BasePage {
 
     protected final WebDriver driver;
-    protected final WebDriverWait wait;
-    protected final WaitUtils wu;
 
-    protected BasePage() {
-        this.driver = DriverFactory.getDriver();
+    // Ham selenium wait (gerekirse)
+    protected final WebDriverWait webWait;
+
+    // Page’lerde kullanacağın asıl helper
+    protected final WaitUtils wait;
+
+    /**
+     * Primary constructor used by Page Objects.
+     */
+    protected BasePage(WebDriver driver) {
+        this.driver = driver;
         int timeoutSeconds = Integer.parseInt(ConfigReader.get("timeoutSeconds", "20"));
-        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(timeoutSeconds));
-        this.wu = new WaitUtils(this.wait);
+        this.webWait = new WebDriverWait(this.driver, Duration.ofSeconds(timeoutSeconds));
+        this.wait = new WaitUtils(this.webWait);
     }
 
-    protected void click(By locator) { wu.click(locator); }
-    protected void type(By locator, String text) { wu.type(locator, text); }
-    protected void pressEnter(By locator) { wu.pressEnter(locator); }
+    /**
+     * Backward-compatible constructor (uses DriverFactory).
+     */
+    protected BasePage() {
+        this(DriverFactory.getDriver());
+    }
+
+    // -------------------- Common actions --------------------
+
+    protected void click(By locator) { wait.click(locator); }
+
+    /** Compatibility alias used by existing page objects. */
+    protected void sendKeys(By locator, String text) { wait.type(locator, text); }
+
+    /** Preferred name. */
+    protected void type(By locator, String text) { wait.type(locator, text); }
+
+    protected void pressEnter(By locator) { wait.pressEnter(locator); }
+
+    protected String getText(By locator) { return wait.visible(locator).getText(); }
 
     protected boolean isDisplayed(By locator) {
         try { return driver.findElement(locator).isDisplayed(); }
@@ -38,30 +63,42 @@ public abstract class BasePage {
         return els.size();
     }
 
-    public void jsClick(By by) {
-        WebElement el = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.presenceOfElementLocated(by));
+    // -------------------- Robust click helpers --------------------
 
+    /**
+     * Scroll + normal click, intercept olursa JS click fallback.
+     * (popup / cookie / overlay / slider yüzünden tıklanamama için)
+     */
+    protected void safeClick(By locator) {
+        WebElement el = wait.clickable(locator);
+        try {
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center', inline:'nearest'});", el
+            );
+            el.click();
+        } catch (ElementClickInterceptedException | MoveTargetOutOfBoundsException e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+        }
+    }
+
+    public void jsClick(By by) {
+        WebElement el = webWait.until(ExpectedConditions.presenceOfElementLocated(by));
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block:'center', inline:'center'});", el
         );
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
     }
 
-
-
     protected void scrollIntoView(By locator) {
-        WebElement el = wu.visible(locator);
+        WebElement el = wait.visible(locator);
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block:'center'});", el);
     }
 
     protected void hover(By locator) {
-        WebElement el = wu.visible(locator);
+        WebElement el = wait.visible(locator);
         new Actions(driver).moveToElement(el).perform();
     }
-    public String getCurrentUrl() {
-        return driver.getCurrentUrl();
-    }
 
+    public String getCurrentUrl() { return driver.getCurrentUrl(); }
 }

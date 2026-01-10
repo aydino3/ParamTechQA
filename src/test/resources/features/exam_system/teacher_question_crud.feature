@@ -1,4 +1,4 @@
-@ui
+@ui @teacher
 Feature: Teacher question creation
 
   Scenario: Teacher can create a multiple-choice question
@@ -8,7 +8,7 @@ Feature: Teacher question creation
 
   Scenario: Teacher can create a true/false question
     Given I am logged in as "teacher"
-    When I create a new true/false question
+    When I create a new true||false question
     Then I should see the new question in the questions list
 
   Scenario: Question form validates required fields

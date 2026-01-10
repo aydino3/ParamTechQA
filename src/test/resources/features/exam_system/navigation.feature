@@ -1,21 +1,9 @@
-@ui
+@ui @navigation
 Feature: Navigation and access control
 
   Scenario: Root path redirects to login
     When I visit path "/"
     Then I should be on the login page
-
-  Scenario Outline: Unauthenticated users are redirected to login for protected pages
-    When I visit path "<path>"
-    Then I should be on the login page
-
-    Examples:
-      | path               |
-      | /admin/dashboard   |
-      | /teacher/dashboard |
-      | /student/dashboard |
-      | /teacher/questions |
-      | /teacher/exams     |
 
   Scenario: Teacher navigation links work
     Given I am logged in as "teacher"

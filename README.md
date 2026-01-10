@@ -17,13 +17,15 @@ It is configured to test the **Exam System v2** (FastAPI web UI) locally.
 In the exam_systemv2 project:
 
 ```bash
-chmod +x scripts/*.sh
-./scripts/init_db.sh
-./scripts/run_dev.sh
+cd /Users/aydin.ozkan1/Desktop/exam_systemv2
+source venv/bin/activate
+bash ./scripts/init_db.sh
+bash ./scripts/run_dev.sh
+
 ```
 
 The UI should be available at:
-- `http://127.0.0.1:8000`
+- `http://0.0.0.0:8000`
 
 ---
 

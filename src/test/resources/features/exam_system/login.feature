@@ -1,4 +1,4 @@
-@ui
+@ui @login
 Feature: Login
   As a user of the Online Exam System
   I want to log in with role-based accounts

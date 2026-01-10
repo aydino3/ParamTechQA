@@ -21,53 +21,67 @@ public class TeacherQuestionSteps {
         TestContext.put("lastQuestionText", qText);
 
         TeacherQuestionsPage p = page();
-        p.openList();
         p.openNewQuestion();
+
+        // Page tarafındaki TEK doğru MCQ create methodu
         p.createMultipleChoiceQuestion(
-                qText,
+                qText,   // title
+                "Auto body for: " + qText, // body
                 "Option A",
                 "Option B",
                 "Option C",
                 "Option D",
+                "Option E",
                 "A",
                 "automation"
         );
-        Assertions.assertTrue(p.isOnQuestionsList(), "Expected to be back on questions list after creation");
+
+        // SUCCESS alert'e güvenme. (bazı UI'larda redirect var, alert yok)
+        // Asıl doğrulama Then step’te listede çıkması.
     }
 
-    @When("I create a new true/false question")
-    public void iCreateNewTrueFalseQuestion() {
+    @When("I create a new true||false question")
+    public void iCreateANewTrueFalseQuestion() {
         String qText = "Auto TF " + UUID.randomUUID();
         TestContext.put("lastQuestionText", qText);
 
         TeacherQuestionsPage p = page();
-        p.openList();
         p.openNewQuestion();
-        p.createTrueFalseQuestion(qText, "true", "automation");
-        Assertions.assertTrue(p.isOnQuestionsList(), "Expected to be back on questions list after creation");
+
+        // Page tarafındaki TEK doğru TF create methodu
+        p.createTrueFalseQuestion(qText, true, "automation");
+
+        // SUCCESS alert'e güvenme -> Then list doğrulaması
     }
 
     @Then("I should see the new question in the questions list")
     public void iShouldSeeTheNewQuestionInTheList() {
         String qText = TestContext.get("lastQuestionText", String.class);
+
         TeacherQuestionsPage p = page();
         p.openList();
-        Assertions.assertTrue(p.isQuestionPresentInList(qText), "Expected question to be present in list: " + qText);
+
+        Assertions.assertTrue(
+                p.waitUntilQuestionAppears(qText),
+                "Expected question to be present in list: " + qText
+        );
     }
 
     @When("I try to create a question without question text")
+    @When("I try to create a question without a question text")
     public void iTryToCreateQuestionWithoutText() {
         TeacherQuestionsPage p = page();
-        p.openList();
         p.openNewQuestion();
 
-        // Leave question_text empty
+        // Title/body boş gönderiyoruz
         p.createMultipleChoiceQuestion(
+                "",
                 "",
                 "Option A",
                 "Option B",
                 "Option C",
                 "Option D",
+                "Option E",
                 "A",
                 "automation"
         );
@@ -75,9 +89,20 @@ public class TeacherQuestionSteps {
 
     @Then("I should see a question validation error")
     public void iShouldSeeQuestionValidationError() {
-        // Depending on HTML validation/server-side validation, we may stay on form or show alert.
-        // The most stable assertion: we should NOT land on questions list.
         TeacherQuestionsPage p = page();
-        Assertions.assertFalse(p.isOnQuestionsList(), "Expected to NOT be on list when validation fails");
+
+        // 1) Hala "new question" ekranında olmalı (redirect olmamalı)
+        // 2) Sayfada bir validasyon izi olmalı (required/error/please gibi)
+        String url = DriverFactory.getDriver().getCurrentUrl().toLowerCase();
+
+        Assertions.assertTrue(
+                url.contains("/teacher/questions/new"),
+                "Expected to stay on New Question page when validation fails, but URL was: " + url
+        );
+
+        Assertions.assertTrue(
+                p.isValidationErrorShown(),
+                "Expected some validation message to be shown (required/error/please...)"
+        );
     }
 }

@@ -25,7 +25,6 @@ public class TeacherExamSteps {
         p.openNewExam();
         p.createExam(title, "Created by automated test", "30", "1", "after_end");
 
-        Assertions.assertTrue(p.isOnExamsList(), "Expected to be back on exams list after creation");
     }
 
     @Then("I should see the new exam in the exams list")

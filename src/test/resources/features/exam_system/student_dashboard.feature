@@ -1,4 +1,4 @@
-@ui
+@ui @student
 Feature: Student dashboard
 
   Scenario: Student dashboard shows assignments table

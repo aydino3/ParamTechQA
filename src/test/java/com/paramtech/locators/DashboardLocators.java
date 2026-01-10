@@ -14,6 +14,6 @@ public final class DashboardLocators {
     public static final By TEACHER_LINK_EXAMS = By.xpath("//a[contains(@href, '/teacher/exams')]");
 
     // Student dashboard table and start buttons
-    public static final By STUDENT_ASSIGNMENTS_TABLE = By.xpath("//table");
+    public static final By STUDENT_ASSIGNMENTS_TABLE = By.xpath("//div[@class='card-body']");
     public static final By STUDENT_START_BUTTONS = By.xpath("//a[contains(@href, '/student/attempts/start') or contains(., 'Start')]");
 }

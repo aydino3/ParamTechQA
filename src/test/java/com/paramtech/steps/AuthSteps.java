@@ -5,6 +5,7 @@ import com.paramtech.locators.CommonLocators;
 import com.paramtech.locators.DashboardLocators;
 import com.paramtech.pages.LoginPage;
 import com.paramtech.utils.ConfigReader;
+import com.paramtech.utils.WaitUtils;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -34,11 +35,13 @@ public class AuthSteps {
     }
 
     private String passwordForRole(String role) {
-        return ConfigReader.getProperty(role + ".password");
+        String pw = ConfigReader.getProperty(role + ".password");
+        return pw;
     }
 
+
     @Given("I am logged in as {string}")
-    public void iAmLoggedInAs(String role) {
+    public void iAmLoggedInAs(String role) throws InterruptedException {
         LoginPage loginPage = new LoginPage(driver());
         loginPage.open();
         loginPage.login(usernameForRole(role), passwordForRole(role));
@@ -51,22 +54,32 @@ public class AuthSteps {
             wait.until(ExpectedConditions.visibilityOfElementLocated(DashboardLocators.TEACHER_H1));
         } else if ("student".equalsIgnoreCase(role)) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(DashboardLocators.STUDENT_H1));
-        } else {
-            // Unknown role - at least ensure we are not on login
-            wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
         }
+        Thread.sleep(1500);
     }
 
     @When("I log in as {string}")
     public void iLogInAs(String role) {
         LoginPage loginPage = new LoginPage(driver());
         loginPage.login(usernameForRole(role), passwordForRole(role));
+
+        WaitUtils.waitForPageToLoad(driver(), timeoutSeconds());
+
+        new WebDriverWait(driver(), Duration.ofSeconds(timeoutSeconds()))
+                .until(d ->
+                        d.getCurrentUrl().contains("/admin")
+                                || d.getCurrentUrl().contains("/teacher")
+                                || d.getCurrentUrl().contains("/student")
+                                || !d.findElements(CommonLocators.ALERT).isEmpty()
+                );
     }
 
+
     @When("I log in with username {string} and password {string}")
-    public void iLogInWithCredentials(String username, String password) {
+    public void iLogInWithCredentials(String username, String password) throws InterruptedException {
         LoginPage loginPage = new LoginPage(driver());
         loginPage.login(username, password);
+        Thread.sleep(1500);
     }
 
     @When("I attempt to submit the login form with empty credentials")
@@ -101,13 +114,7 @@ public class AuthSteps {
         // Try link first
         if (!driver().findElements(CommonLocators.LOGOUT_LINK).isEmpty()) {
             driver().findElement(CommonLocators.LOGOUT_LINK).click();
-        } else if (!driver().findElements(CommonLocators.LOGOUT_FORM).isEmpty()) {
-            driver().findElement(CommonLocators.LOGOUT_FORM).click();
-        } else {
-            // Fallback: sometimes logout is a button with text
-            if (!driver().findElements(CommonLocators.LOGOUT_BUTTON_FALLBACK).isEmpty()) {
-                driver().findElement(CommonLocators.LOGOUT_BUTTON_FALLBACK).click();
-            }
         }
     }
 }
+

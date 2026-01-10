@@ -1,4 +1,4 @@
-@ui
+@ui @teacher
 Feature: Teacher exam creation
 
   Scenario: Teacher can create a new exam

@@ -31,4 +31,10 @@ public class LoginPage extends BasePage {
         }
         return "";
     }
+
+    public void submitEmpty() {
+        // Kullanıcı adı / şifreye dokunmadan direkt submit
+        click(LoginLocators.SUBMIT);
+    }
+
 }

@@ -1,4 +1,4 @@
-@ui
+@ui @teacher
 Feature: Teacher dashboard
 
   Scenario: Teacher dashboard shows key sections
