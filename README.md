@@ -105,9 +105,3 @@ mvn test
 - Teacher question creation (MCQ + True/False + validation)
 - Teacher exam creation (create + validation)
 
----
-
-## Notes
-
-- Browsers may request `/favicon.ico` automatically; a `404` in server logs is normal.
-- If the server or seed data changes, update demo credentials and locators accordingly.
