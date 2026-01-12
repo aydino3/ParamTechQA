@@ -716,10 +716,10 @@ def seed_data():
                 email="admin@bau.com"
             )
 
-        # Demo users (for QA Automation)
+         Demo users (for QA Automation)
         demo_users = [
-            ("teacher",  "teacher123", UserRole.TEACHER, "teacher@bau.com"),
-            ("student1", "student123", UserRole.STUDENT, "student1@bau.com"),
+           ("teacher",  "teacher123", UserRole.TEACHER, "teacher@bau.com"),
+          ("student1", "student123", UserRole.STUDENT, "student1@bau.com"),
         ]
         for username, pw, role, email in demo_users:
             if not user_repo.get_by_username(username):
