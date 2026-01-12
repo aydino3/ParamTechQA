@@ -1,16 +1,11 @@
 package com.paramtech.pages;
 
-import com.paramtech.driver.DriverFactory;
 import com.paramtech.locators.TeacherQuestionsLocators;
 import com.paramtech.utils.ConfigReader;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
-import java.time.Duration;
 import java.util.List;
 
 public class TeacherQuestionsPage extends BasePage {
