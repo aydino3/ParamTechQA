@@ -1,0 +1,744 @@
+{
+	"info": {
+		"_postman_id": "f6f1c4de-59c4-49db-92c7-2fe854908224",
+		"name": "Setup For API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44572144"
+	},
+	"item": [
+		{
+			"name": "Creating Test Questions",
+			"item": [
+				{
+					"name": "Create q1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response contains question ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    ",
+									"    pm.environment.set(\"created_question_1_id\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',",
+									"    method: 'POST',",
+									"    header: {'Content-Type': 'application/json'},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            username: pm.variables.get('teacher_username'),",
+									"            password: pm.variables.get('teacher_password')",
+									"        })",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Question\",\n    \"body\": \"Select the correct answer.\",\n    \"difficulty\": 2,\n    \"type\": \"multiple_choice\",\n    \"explanation\": \"Basic arithmetic: 2 + 2 = 4\",\n    \"options\": [\n        {\"text\": \"Option 1\", \"is_correct\": false},\n        {\"text\": \"Option 2\", \"is_correct\": true},\n        {\"text\": \"Option 3\", \"is_correct\": false},\n        {\"text\": \"Option 4\", \"is_correct\": false}\n    ],\n\n    \"tags\": []\n    \n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create q2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response contains question ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    ",
+									"    pm.environment.set(\"created_question_2_id\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',",
+									"    method: 'POST',",
+									"    header: {'Content-Type': 'application/json'},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            username: pm.variables.get('teacher_username'),",
+									"            password: pm.variables.get('teacher_password')",
+									"        })",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Question\",\n    \"body\": \"Select the correct answer.\",\n    \"difficulty\": 2,\n    \"type\": \"multiple_choice\",\n    \"explanation\": \"Basic arithmetic: 2 + 2 = 4\",\n    \"options\": [\n        {\"text\": \"Option 1\", \"is_correct\": false},\n        {\"text\": \"Option 2\", \"is_correct\": true},\n        {\"text\": \"Option 3\", \"is_correct\": false},\n        {\"text\": \"Option 4\", \"is_correct\": false}\n    ],\n\n    \"tags\": []\n    \n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create q3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response contains question ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    ",
+									"    pm.environment.set(\"created_question_3_id\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',",
+									"    method: 'POST',",
+									"    header: {'Content-Type': 'application/json'},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            username: pm.variables.get('teacher_username'),",
+									"            password: pm.variables.get('teacher_password')",
+									"        })",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Question\",\n    \"body\": \"Select the correct answer.\",\n    \"difficulty\": 2,\n    \"type\": \"multiple_choice\",\n    \"explanation\": \"Basic arithmetic: 2 + 2 = 4\",\n    \"options\": [\n        {\"text\": \"Option 1\", \"is_correct\": false},\n        {\"text\": \"Option 2\", \"is_correct\": true},\n        {\"text\": \"Option 3\", \"is_correct\": false},\n        {\"text\": \"Option 4\", \"is_correct\": false}\n    ],\n\n    \"tags\": []\n    \n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create q4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response contains question ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    ",
+									"    pm.environment.set(\"created_question_4_id\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session",
+									"pm.sendRequest({",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',",
+									"    method: 'POST',",
+									"    header: {'Content-Type': 'application/json'},",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            username: pm.variables.get('teacher_username'),",
+									"            password: pm.variables.get('teacher_password')",
+									"        })",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Question\",\n    \"body\": \"Select the correct answer.\",\n    \"difficulty\": 2,\n    \"type\": \"multiple_choice\",\n    \"explanation\": \"Basic arithmetic: 2 + 2 = 4\",\n    \"options\": [\n        {\"text\": \"Option 1\", \"is_correct\": false},\n        {\"text\": \"Option 2\", \"is_correct\": true},\n        {\"text\": \"Option 3\", \"is_correct\": false},\n        {\"text\": \"Option 4\", \"is_correct\": false}\n    ],\n\n    \"tags\": []\n    \n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Creating an assigment",
+			"item": [
+				{
+					"name": "Creating a test exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Exam created with ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.variables.set('created_exam_id', jsonData.id);",
+									"});",
+									"pm.test(\"Grading policy is set\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('grading_policy');",
+									"});",
+									"pm.test(\"Response contains question ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    ",
+									"    pm.environment.set(\"created_exam_id_for_assigments\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session\r",
+									"pm.sendRequest({\r",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',\r",
+									"    method: 'POST',\r",
+									"    header: {'Content-Type': 'application/json'},\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            username: pm.variables.get('teacher_username'),\r",
+									"            password: pm.variables.get('teacher_password')\r",
+									"        })\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam For Assigments\",\n    \"description\": \"This exam is created for assigment tests.\",\n    \"duration_minutes\": 120,\n    // \"start_at\": \"2026-01-12T20:00:00\",\n    // \"end_at\": \"2026-01-16T21:00:00\",\n    \"attempts_allowed\": 2,\n    \"shuffle_questions\": false,\n    \"shuffle_options\": true,\n    \"grading_policy\": \"immediate\",\n    \"pass_score\": 60\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding q1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"question_id\": \"{{created_question_1_id}}\",\r\n    \"sort_order\": \"1\",\r\n    \"points\": \"25\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id_for_assigments}}/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams",
+								"{{created_exam_id_for_assigments}}",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding q2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"question_id\": \"{{created_question_2_id}}\",\r\n    \"sort_order\": \"2\",\r\n    \"points\": \"25\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id_for_assigments}}/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams",
+								"{{created_exam_id_for_assigments}}",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding q3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"question_id\": \"{{created_question_3_id}}\",\r\n    \"sort_order\": \"3\",\r\n    \"points\": \"25\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id_for_assigments}}/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams",
+								"{{created_exam_id_for_assigments}}",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adding q4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"question_id\": \"{{created_question_4_id}}\",\r\n    \"sort_order\": \"4\",\r\n    \"points\": \"25\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id_for_assigments}}/questions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams",
+								"{{created_exam_id_for_assigments}}",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Exam For Assigments\",\n    \"description\": \"This exam is created for assigment tests.\",\n    \"duration_minutes\": 120,\n    \"start_at\": \"2026-02-20T09:00:00\",\n    \"end_at\": \"2026-02-20T11:00:00\",\n    \"attempts_allowed\": 2,\n    \"shuffle_questions\": false,\n    \"shuffle_options\": true,\n    \"grading_policy\": \"immediate\",\n    \"pass_score\": 60\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id_for_assigments}}/publish",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams",
+								"{{created_exam_id_for_assigments}}",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assigning to test student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"exam_id\":{{created_exam_id_for_assigments}},\r\n    \"student_ids\": [{{student_id}}]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/exams/{{created_exam_id_for_assigments}}/assignments/bulk",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"exams",
+								"{{created_exam_id_for_assigments}}",
+								"assignments",
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assigment id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login first to get session\r",
+									"pm.sendRequest({\r",
+									"    url: pm.variables.get('base_url') + '/api/auth/login',\r",
+									"    method: 'POST',\r",
+									"    header: {'Content-Type': 'application/json'},\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            username: pm.variables.get('student_username'),\r",
+									"            password: pm.variables.get('student_password')\r",
+									"        })\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const responseJson = pm.response.json();\r",
+									"\r",
+									"if (responseJson.items && responseJson.items.length > 0) {\r",
+									"    const lastAssignment = responseJson.items[0];\r",
+									"    pm.environment.set(\"created_assignment_id\", lastAssignment.id);\r",
+									"    console.log(\"Saved assignment_id:\", lastAssignment.id);\r",
+									"} else {\r",
+									"    console.log(\"No assignments found\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/assignments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
