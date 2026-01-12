@@ -1,11 +1,14 @@
 package com.paramtech.pages;
 
+import com.paramtech.driver.DriverFactory;
 import com.paramtech.locators.TeacherQuestionsLocators;
 import com.paramtech.utils.ConfigReader;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import java.time.Duration;
 import java.util.List;
@@ -16,20 +19,13 @@ public class TeacherQuestionsPage extends BasePage {
         super(driver);
     }
 
-    // ---------------- NAV ----------------
-    public void openList() {
-        driver.get(ConfigReader.getProperty("baseUrl") + "/teacher/questions");
-    }
+
 
     public void openNewQuestion() {
         driver.get(ConfigReader.getProperty("baseUrl") + "/teacher/questions/new");
     }
 
-    public boolean isAtList() {
-        return isDisplayed(TeacherQuestionsLocators.H1_QUESTIONS);
-    }
 
-    // ---------------- CREATE (MCQ) ----------------
     public void createMultipleChoiceQuestion(
             String title,
             String body,
@@ -135,17 +131,11 @@ public class TeacherQuestionsPage extends BasePage {
     // ---------------- SUCCESS ALERT ASSERT ----------------
     private final By SUCCESS_ALERT = By.xpath("//*[contains(@class,'alert') and contains(@class,'success')]");
 
-    public boolean waitForSuccessMessageContains(String expectedText) {
-        WebElement alert = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.visibilityOfElementLocated(SUCCESS_ALERT));
 
-        String actual = alert.getText().trim().toLowerCase();
-        return actual.contains(expectedText.toLowerCase());
-    }
 
     // ---------------- LIST CHECK (PAGINATION FIX) ----------------
     public boolean isQuestionPresentInList(String qText) {
-        int maxPages = 15;
+        int maxPages = 100;
 
         for (int page = 0; page < maxPages; page++) {
 
@@ -178,15 +168,7 @@ public class TeacherQuestionsPage extends BasePage {
         return false;
     }
 
-    public boolean waitUntilQuestionAppears(String qText) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                TeacherQuestionsLocators.H1_QUESTIONS
-        ));
-
-        return wait.until(d -> isQuestionPresentInList(qText));
-    }
     public boolean isValidationErrorShown() {
         String src = driver.getPageSource();
         if (src == null) return false;
@@ -202,5 +184,9 @@ public class TeacherQuestionsPage extends BasePage {
                 || s.contains("hata")
                 || s.contains("lütfen");
     }
-
+    public void openListSearch(String qText) {
+        String base = ConfigReader.getProperty("baseUrl");
+        String encoded = URLEncoder.encode(qText, StandardCharsets.UTF_8);
+        driver.get(base + "/teacher/questions?search=" + encoded);
+    }
 }

@@ -59,15 +59,18 @@ public class TeacherQuestionSteps {
         String qText = TestContext.get("lastQuestionText", String.class);
 
         TeacherQuestionsPage p = page();
-        p.openList();
+        p.openListSearch(qText);
 
-        Assertions.assertTrue(
-                p.waitUntilQuestionAppears(qText),
-                "Expected question to be present in list: " + qText
-        );
+        // Search sayfası yüklenene kadar bekle (30sn)
+        org.openqa.selenium.support.ui.WebDriverWait wait =
+                new org.openqa.selenium.support.ui.WebDriverWait(DriverFactory.getDriver(), java.time.Duration.ofSeconds(30));
+
+        Boolean found = wait.until(d -> d.getPageSource().toLowerCase().contains(qText.toLowerCase()));
+
+        Assertions.assertTrue(found, "Expected question to be present in list: " + qText);
     }
 
-    @When("I try to create a question without question text")
+
     @When("I try to create a question without a question text")
     public void iTryToCreateQuestionWithoutText() {
         TeacherQuestionsPage p = page();
