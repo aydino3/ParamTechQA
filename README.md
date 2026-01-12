@@ -27,8 +27,12 @@ Mehmet Fatih Yücel - 1902608
 In the exam_systemv2 project:
 
 ```bash
-cd /Users/<yourusername>/Desktop/exam_systemv2
+cd exam_systemv2
+rm -rf venv
+python -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
+chmod +x scripts/*.sh
 bash ./scripts/init_db.sh
 bash ./scripts/run_dev.sh
 
