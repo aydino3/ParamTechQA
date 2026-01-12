@@ -94,7 +94,6 @@ After seeding, you can login with:
 - **Admin**: `admin` / `admin123`
 - **Teacher**: `teacher` / `teacher123`
 - **Student**: `student1` / `student123`
-- **Student**: `student2` / `student123`
 
 ## Usage Flow
 
