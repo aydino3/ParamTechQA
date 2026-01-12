@@ -10,7 +10,7 @@ import static io.cucumber.junit.platform.engine.Constants.FILTER_TAGS_PROPERTY_N
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features") // veya "features/exam_system"
+@SelectClasspathResource("features")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.paramtech.steps,com.paramtech.hooks")
 @ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value = "@ui")
 public class RunCucumberTest { }

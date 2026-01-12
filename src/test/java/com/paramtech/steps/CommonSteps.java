@@ -81,7 +81,6 @@ public class CommonSteps {
 
     @When("I submit the login form without credentials")
     public void iSubmitLoginFormWithoutCredentials() {
-        // Clear fields (if present) and click submit
         if (!driver().findElements(By.xpath("//input[@id='username']")).isEmpty()) {
             driver().findElement(By.xpath("//input[@id='username']")).clear();
         }
@@ -105,10 +104,8 @@ public class CommonSteps {
 
     @Then("I should see a login validation error")
     public void iShouldSeeLoginValidationError() {
-        // HTML5 required fields may prevent a submission; in that case we simply stay on /login.
         Assertions.assertTrue(driver().getCurrentUrl().contains("/login"),
                 "Expected to remain on /login, but was on: " + driver().getCurrentUrl());
-        // If server-side validation is used, it will likely show an alert.
         if (!driver().findElements(CommonLocators.ALERT).isEmpty()) {
             String alertText = driver().findElement(CommonLocators.ALERT).getText();
             Assertions.assertFalse(alertText.isBlank(), "Validation alert was present but empty.");

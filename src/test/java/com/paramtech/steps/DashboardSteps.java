@@ -37,7 +37,6 @@ public class DashboardSteps {
 
     @Then("I should be on the teacher dashboard page")
     public void iShouldBeOnTheTeacherDashboardPage() {
-        // Bazı projelerde /teacher veya /teacher/home gibi olabiliyor
         assertUrlMatchesAny("/teacher/dashboard", "/teacher");
         assertVisible(DashboardLocators.TEACHER_H1, "Teacher dashboard H1");
     }

@@ -21,24 +21,15 @@ public final class ConfigReader {
 
     private ConfigReader() {}
 
-    /**
-     * Compatibility alias.
-     * Some classes use ConfigReader.getProperty(key) style.
-     */
+
     public static String getProperty(String key) {
         return get(key, "");
     }
 
-    /**
-     * Compatibility alias with default value.
-     */
     public static String getProperty(String key, String defaultValue) {
         return get(key, defaultValue);
     }
 
-    /**
-     * Convenience overload.
-     */
     public static String get(String key) {
         return get(key, "");
     }

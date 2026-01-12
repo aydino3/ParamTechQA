@@ -46,7 +46,6 @@ public class AuthSteps {
         loginPage.open();
         loginPage.login(usernameForRole(role), passwordForRole(role));
 
-        // Wait for dashboard redirect (role dependent)
         WebDriverWait wait = new WebDriverWait(driver(), Duration.ofSeconds(timeoutSeconds()));
         if ("admin".equalsIgnoreCase(role)) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(DashboardLocators.ADMIN_H1));
@@ -111,7 +110,6 @@ public class AuthSteps {
 
     @When("I log out")
     public void iLogOut() {
-        // Try link first
         if (!driver().findElements(CommonLocators.LOGOUT_LINK).isEmpty()) {
             driver().findElement(CommonLocators.LOGOUT_LINK).click();
         }

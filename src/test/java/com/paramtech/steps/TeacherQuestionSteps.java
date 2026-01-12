@@ -23,10 +23,9 @@ public class TeacherQuestionSteps {
         TeacherQuestionsPage p = page();
         p.openNewQuestion();
 
-        // Page tarafındaki TEK doğru MCQ create methodu
         p.createMultipleChoiceQuestion(
-                qText,   // title
-                "Auto body for: " + qText, // body
+                qText,
+                "Auto body for: " + qText,
                 "Option A",
                 "Option B",
                 "Option C",
@@ -35,9 +34,6 @@ public class TeacherQuestionSteps {
                 "A",
                 "automation"
         );
-
-        // SUCCESS alert'e güvenme. (bazı UI'larda redirect var, alert yok)
-        // Asıl doğrulama Then step’te listede çıkması.
     }
 
     @When("I create a new true||false question")
@@ -48,10 +44,8 @@ public class TeacherQuestionSteps {
         TeacherQuestionsPage p = page();
         p.openNewQuestion();
 
-        // Page tarafındaki TEK doğru TF create methodu
         p.createTrueFalseQuestion(qText, true, "automation");
 
-        // SUCCESS alert'e güvenme -> Then list doğrulaması
     }
 
     @Then("I should see the new question in the questions list")
@@ -61,7 +55,6 @@ public class TeacherQuestionSteps {
         TeacherQuestionsPage p = page();
         p.openListSearch(qText);
 
-        // Search sayfası yüklenene kadar bekle (30sn)
         org.openqa.selenium.support.ui.WebDriverWait wait =
                 new org.openqa.selenium.support.ui.WebDriverWait(DriverFactory.getDriver(), java.time.Duration.ofSeconds(30));
 
@@ -76,7 +69,6 @@ public class TeacherQuestionSteps {
         TeacherQuestionsPage p = page();
         p.openNewQuestion();
 
-        // Title/body boş gönderiyoruz
         p.createMultipleChoiceQuestion(
                 "",
                 "",
@@ -94,8 +86,6 @@ public class TeacherQuestionSteps {
     public void iShouldSeeQuestionValidationError() {
         TeacherQuestionsPage p = page();
 
-        // 1) Hala "new question" ekranında olmalı (redirect olmamalı)
-        // 2) Sayfada bir validasyon izi olmalı (required/error/please gibi)
         String url = DriverFactory.getDriver().getCurrentUrl().toLowerCase();
 
         Assertions.assertTrue(

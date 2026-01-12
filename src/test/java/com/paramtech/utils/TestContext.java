@@ -6,8 +6,6 @@ import java.util.Map;
 public final class TestContext {
     private static final ThreadLocal<Map<String, Object>> CTX = ThreadLocal.withInitial(HashMap::new);
 
-    private TestContext() {}
-
     public static void put(String key, Object value) {
         CTX.get().put(key, value);
     }

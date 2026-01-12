@@ -32,27 +32,22 @@ public class TeacherQuestionsPage extends BasePage {
             String correctOptionLetter,
             String tag
     ) {
-        // title + body
         sendKeys(TeacherQuestionsLocators.TITLE, title);
 
-        // BODY textarea varsa doldur
         if (!driver.findElements(TeacherQuestionsLocators.BODY).isEmpty()) {
             sendKeys(TeacherQuestionsLocators.BODY, body);
         }
 
-        // difficulty (input/select)
         if (!driver.findElements(TeacherQuestionsLocators.DIFFICULTY_INPUT).isEmpty()) {
             sendKeys(TeacherQuestionsLocators.DIFFICULTY_INPUT, "1");
         } else if (!driver.findElements(TeacherQuestionsLocators.DIFFICULTY_SELECT).isEmpty()) {
             new Select(driver.findElement(TeacherQuestionsLocators.DIFFICULTY_SELECT)).selectByValue("1");
         }
 
-        // type
         if (!driver.findElements(TeacherQuestionsLocators.QUESTION_TYPE).isEmpty()) {
             new Select(driver.findElement(TeacherQuestionsLocators.QUESTION_TYPE)).selectByValue("multiple_choice");
         }
 
-        // Ensure 5 option inputs
         int safety = 0;
         while (driver.findElements(TeacherQuestionsLocators.OPTION_TEXT_INPUTS).size() < 5 && safety++ < 10) {
             if (!driver.findElements(TeacherQuestionsLocators.ADD_OPTION_BUTTON).isEmpty()) {
@@ -68,8 +63,7 @@ public class TeacherQuestionsPage extends BasePage {
         if (optionInputs.size() > 3) { optionInputs.get(3).clear(); optionInputs.get(3).sendKeys(optionD); }
         if (optionInputs.size() > 4) { optionInputs.get(4).clear(); optionInputs.get(4).sendKeys(optionE); }
 
-        // correct checkbox index
-        int idx = 0; // default A
+        int idx = 0;
         if (correctOptionLetter != null) {
             String c = correctOptionLetter.trim().toUpperCase();
             if ("B".equals(c)) idx = 1;
@@ -83,12 +77,10 @@ public class TeacherQuestionsPage extends BasePage {
             checks.get(idx).click();
         }
 
-        // tag
         if (tag != null && !tag.isBlank() && !driver.findElements(TeacherQuestionsLocators.TAGS).isEmpty()) {
             sendKeys(TeacherQuestionsLocators.TAGS, tag);
         }
 
-        // submit
         click(TeacherQuestionsLocators.SUBMIT);
     }
 

@@ -1,6 +1,5 @@
 package com.paramtech.pages;
 
-import com.paramtech.locators.CommonLocators;
 import com.paramtech.locators.LoginLocators;
 import com.paramtech.utils.ConfigReader;
 import org.openqa.selenium.WebDriver;
@@ -21,19 +20,7 @@ public class LoginPage extends BasePage {
         click(LoginLocators.SUBMIT);
     }
 
-    public boolean isOnLoginPage() {
-        return driver.getCurrentUrl().contains("/login");
-    }
-
-    public String getAlertText() {
-        if (isDisplayed(CommonLocators.ALERT)) {
-            return getText(CommonLocators.ALERT);
-        }
-        return "";
-    }
-
     public void submitEmpty() {
-        // Kullanıcı adı / şifreye dokunmadan direkt submit
         click(LoginLocators.SUBMIT);
     }
 

@@ -37,7 +37,6 @@ public final class DriverFactory {
 
         ChromeOptions options = new ChromeOptions();
 
-        // ✅ Her testte temiz profil (en kritik kısım)
         try {
             Path tmpProfile = Files.createTempDirectory("selenium-chrome-profile-");
             TL_PROFILE_DIR.set(tmpProfile);
@@ -47,34 +46,26 @@ public final class DriverFactory {
             throw new RuntimeException("Failed to create temp Chrome profile dir", e);
         }
 
-        // ✅ Password Manager / Leak Detection / Breach uyarısını kapat (PREF + FEATURE + ARG)
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("credentials_enable_service", false);
         prefs.put("profile.password_manager_enabled", false);
 
-        // Leak detection ayarları (Chrome sürümüne göre isim değişebiliyor diye ikisini de kapatıyoruz)
         prefs.put("profile.password_manager_leak_detection", false);
         prefs.put("profile.password_manager_leak_detection_enabled", false);
 
-        // (Gerekirse) SafeBrowsing kapat — leak detection bunun üzerinden çalışabiliyor
         prefs.put("safebrowsing.enabled", false);
 
-        // Bildirimleri kapat (opsiyonel)
         prefs.put("profile.default_content_setting_values.notifications", 2);
 
         options.setExperimentalOption("prefs", prefs);
 
-        // Chrome feature flag’leri (opsiyonel ama ekledim)
         options.addArguments("--disable-features=PasswordLeakDetection,PasswordManagerOnboarding");
 
-        // Eski Chrome’larda işe yarayan ek flag (zararsız)
         options.addArguments("--disable-save-password-bubble");
 
-        // İlk açılış saçmalıkları
         options.addArguments("--no-first-run");
         options.addArguments("--no-default-browser-check");
 
-        // Genel stabilite
         options.addArguments("--disable-gpu");
         options.addArguments("--disable-dev-shm-usage");
 
@@ -95,12 +86,10 @@ public final class DriverFactory {
         } finally {
             TL_DRIVER.remove();
 
-            // temp profile temizle
             Path dir = TL_PROFILE_DIR.get();
             TL_PROFILE_DIR.remove();
             if (dir != null) {
                 try {
-                    // basit temizlik: klasör boş değilse sorun çıkabilir, ama çoğu durumda yeterli
                     Files.walk(dir)
                             .sorted((a, b) -> b.compareTo(a))
                             .forEach(p -> {
