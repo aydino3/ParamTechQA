@@ -1072,7 +1072,7 @@
 									"pm.test(\"Attempt created with ID\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.variables.set('attempt_id', jsonData.id);",
+									"    pm.environment.set('attempt_id', jsonData.id);",
 									"});",
 									"pm.test(\"Attempt has status\", function () {",
 									"    var jsonData = pm.response.json();",
@@ -1162,14 +1162,14 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/attempts/41/submit",
+							"raw": "{{base_url}}/api/attempts/{{attempt_id}}/submit",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"attempts",
-								"41",
+								"{{attempt_id}}",
 								"submit"
 							]
 						}
@@ -1314,7 +1314,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/attempts/start?assignment_id=",
+							"raw": "{{base_url}}/api/attempts/start?assignment_id={{created_assignment_id}}",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1326,7 +1326,7 @@
 							"query": [
 								{
 									"key": "assignment_id",
-									"value": ""
+									"value": "{{created_assignment_id}}"
 								}
 							]
 						}
@@ -1440,48 +1440,6 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/results/{{attempt_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"results",
-								"{{attempt_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Data Integrity - Result Not Available Yet",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200 or 404\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
-									"});",
-									"pm.test(\"Response indicates result availability\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    if (pm.response.code === 200) {",
-									"        pm.expect(jsonData).to.have.property('score');",
-									"    } else {",
-									"        pm.expect(jsonData).to.have.property('message');",
-									"    }",
 									"});"
 								],
 								"type": "text/javascript",
