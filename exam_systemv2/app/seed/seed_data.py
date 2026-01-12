@@ -715,7 +715,22 @@ def seed_data():
                 role=UserRole.ADMIN,
                 email="admin@bau.com"
             )
-        
+
+        # Demo users (for QA Automation)
+        demo_users = [
+            ("teacher",  "teacher123", UserRole.TEACHER, "teacher@bau.com"),
+            ("student1", "student123", UserRole.STUDENT, "student1@bau.com"),
+        ]
+        for username, pw, role, email in demo_users:
+            if not user_repo.get_by_username(username):
+                user_repo.create(
+                    username=username,
+                    password_hash=hash_password(pw),
+                    role=role,
+                    email=email
+                )
+        db.commit()
+
         # Create teachers
         teachers = []
         for teacher_data in TEACHERS:
