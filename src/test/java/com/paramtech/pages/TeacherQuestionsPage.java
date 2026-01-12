@@ -128,54 +128,12 @@ public class TeacherQuestionsPage extends BasePage {
         click(TeacherQuestionsLocators.SUBMIT);
     }
 
-    // ---------------- SUCCESS ALERT ASSERT ----------------
-    private final By SUCCESS_ALERT = By.xpath("//*[contains(@class,'alert') and contains(@class,'success')]");
-
-
-
-    // ---------------- LIST CHECK (PAGINATION FIX) ----------------
-    public boolean isQuestionPresentInList(String qText) {
-        int maxPages = 100;
-
-        for (int page = 0; page < maxPages; page++) {
-
-            // satır satır ara
-            List<WebElement> rows = driver.findElements(TeacherQuestionsLocators.QUESTIONS_TABLE_ROWS);
-            for (WebElement row : rows) {
-                if (row.getText() != null && row.getText().contains(qText)) {
-                    return true;
-                }
-            }
-
-            // next var mı?
-            List<WebElement> nextButtons = driver.findElements(TeacherQuestionsLocators.PAGINATION_NEXT);
-            if (nextButtons.isEmpty()) {
-                return false;
-            }
-
-            // next'e bas ve sayfanın değişmesini bekle
-            WebElement firstRowBefore = rows.isEmpty() ? null : rows.get(0);
-            nextButtons.get(0).click();
-
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            if (firstRowBefore != null) {
-                wait.until(ExpectedConditions.stalenessOf(firstRowBefore));
-            } else {
-                wait.until(ExpectedConditions.visibilityOfElementLocated(TeacherQuestionsLocators.H1_QUESTIONS));
-            }
-        }
-
-        return false;
-    }
-
-
     public boolean isValidationErrorShown() {
         String src = driver.getPageSource();
         if (src == null) return false;
 
         String s = src.toLowerCase();
 
-        // Hem İngilizce hem TR olası validasyon mesajları
         return s.contains("required")
                 || s.contains("error")
                 || s.contains("please")
