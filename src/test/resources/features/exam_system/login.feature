@@ -23,6 +23,7 @@ Feature: Login
     When I log in as "student"
     Then I should see the Student Dashboard
 
+@negative
   Scenario Outline: Invalid login is rejected
     Given I navigate to the Exam System login page
     When I log in with username "<username>" and password "<password>"
@@ -35,6 +36,7 @@ Feature: Login
       | admin    | wrong    |
       | wrong    | admin123 |
 
+@negative
   Scenario: Empty credentials do not log in
     Given I navigate to the Exam System login page
     When I submit the login form without credentials
